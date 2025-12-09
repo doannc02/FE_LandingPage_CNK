@@ -1,0 +1,30 @@
+# robots.txt for Câu lạc bộ Côn Nhị Khúc Hà Đông
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://nunchaku-hadong.vercel.app/sitemap.xml
+
+# Disallow crawling of API routes (if any)
+Disallow: /api/
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
