@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Oswald, Roboto } from 'next/font/google';
 import './styles/globals.css';
+import { QueryProvider } from './providers/QueryProvider';
 
 const oswald = Oswald({
   subsets: ['latin', 'vietnamese'],
@@ -70,9 +71,11 @@ export default function RootLayout({
         <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com/'} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <QueryProvider>
+          {children}
+        </QueryProvider>
+      </body>
     </html>
   );
 }
-
-
