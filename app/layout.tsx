@@ -1,21 +1,6 @@
 import type { Metadata } from 'next';
-import { Oswald, Roboto } from 'next/font/google';
 import './styles/globals.css';
 import { QueryProvider } from './providers/QueryProvider';
-
-const oswald = Oswald({
-  subsets: ['latin', 'vietnamese'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-display',
-  display: 'swap',
-});
-
-const roboto = Roboto({
-  subsets: ['latin', 'vietnamese'],
-  weight: ['300', '400', '500', '700'],
-  variable: '--font-body',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -135,7 +120,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="vi" className={`${oswald.variable} ${roboto.variable}`}>
+    <html lang="vi">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
@@ -144,6 +129,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
