@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://localhost:52040/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://103.126.161.89/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
