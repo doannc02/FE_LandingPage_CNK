@@ -1,3 +1,4 @@
+// app/lib/hooks/usePosts.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreatePostRequest, GetPostsParams, postsApi } from "../api/posts";
 
@@ -9,9 +10,10 @@ export const postKeys = {
   details: () => [...postKeys.all, "detail"] as const,
   detail: (id: string) => [...postKeys.details(), id] as const,
   slug: (slug: string) => [...postKeys.all, "slug", slug] as const,
+  related: (slug: string) => [...postKeys.all, "related", slug] as const,
 };
 
-// GET Posts với pagination
+// ✅ GET Posts với pagination
 export function usePosts(params: GetPostsParams = {}) {
   return useQuery({
     queryKey: postKeys.list(params),
@@ -20,7 +22,7 @@ export function usePosts(params: GetPostsParams = {}) {
   });
 }
 
-// GET Single Post
+// ✅ GET Single Post by ID
 export function usePost(id: string) {
   return useQuery({
     queryKey: postKeys.detail(id),
@@ -29,29 +31,64 @@ export function usePost(id: string) {
   });
 }
 
-// GET Post by Slug
+// ✅ GET Post by Slug
 export function usePostBySlug(slug: string) {
   return useQuery({
     queryKey: postKeys.slug(slug),
     queryFn: () => postsApi.getPostBySlug(slug),
     enabled: !!slug,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
-// CREATE Post
+// ✅ NEW: GET Related Posts
+export function useRelatedPosts(slug: string, limit: number = 5) {
+  return useQuery({
+    queryKey: postKeys.related(slug),
+    queryFn: () => postsApi.getRelatedPosts(slug, limit),
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+// ✅ NEW: LIKE Post
+export function useLikePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (postId: string) => postsApi.likePost(postId),
+    onSuccess: (newLikeCount, postId) => {
+      // Optimistic update - cập nhật like count ngay lập tức
+      queryClient.setQueryData(
+        postKeys.detail(postId),
+        (oldData: any) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            likeCount: newLikeCount,
+          };
+        }
+      );
+      
+      // Invalidate để fetch lại
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+    },
+  });
+}
+
+// ✅ CREATE Post
 export function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: CreatePostRequest) => postsApi.createPost(data),
     onSuccess: () => {
-      // Invalidate và refetch posts list
       queryClient.invalidateQueries({ queryKey: postKeys.lists() });
     },
   });
 }
 
-// UPDATE Post
+// ✅ UPDATE Post
 export function useUpdatePost() {
   const queryClient = useQueryClient();
 
@@ -72,7 +109,7 @@ export function useUpdatePost() {
   });
 }
 
-// DELETE Post
+// ✅ DELETE Post
 export function useDeletePost() {
   const queryClient = useQueryClient();
 
@@ -84,7 +121,7 @@ export function useDeletePost() {
   });
 }
 
-// PUBLISH Post
+// ✅ PUBLISH Post
 export function usePublishPost() {
   const queryClient = useQueryClient();
 

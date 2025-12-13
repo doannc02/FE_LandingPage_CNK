@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Post, incrementViewCount } from '../lib/api/posts';
+import { Post } from '../lib/api/posts';
+import { useLikePost } from '../lib/hooks/usePosts';
 import styles from './PostDetail.module.css';
 import ShareButtons from './ShareButtons';
 import AuthorBio from './AuthorBio';
@@ -103,26 +104,25 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
   const [showToc, setShowToc] = useState(false);
   const [currentHeading, setCurrentHeading] = useState('');
   const [currentPost, setCurrentPost] = useState(post);
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Tăng view count khi component mount
-  useEffect(() => {
-    const trackView = async () => {
-      try {
-        await incrementViewCount(post.id);
-        
-        // Cập nhật view count cục bộ
-        setCurrentPost(prev => ({
-          ...prev,
-          viewCount: prev.viewCount + 1
-        }));
-      } catch (error) {
-        console.error('Failed to track view:', error);
-      }
-    };
+  // ✅ Sử dụng hook useLikePost từ usePosts.ts
+  const likePostMutation = useLikePost();
 
-    trackView();
-  }, [post.id]);
+  // ❌ XÓA - Backend tự động tăng view khi fetch post
+  // useEffect(() => {
+  //   const trackView = async () => {
+  //     try {
+  //       await incrementViewCount(post.id);
+  //       setCurrentPost(prev => ({
+  //         ...prev,
+  //         viewCount: prev.viewCount + 1
+  //       }));
+  //     } catch (error) {
+  //       console.error('Failed to track view:', error);
+  //     }
+  //   };
+  //   trackView();
+  // }, [post.id]);
 
   // Lắng nghe scroll để highlight mục lục
   useEffect(() => {
@@ -144,27 +144,20 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Hàm xử lý like bài viết
+  // ✅ Hàm xử lý like bài viết - SỬA LẠI
   const handleLike = async () => {
     try {
-      setIsLoading(true);
-      const response = await fetch(`/api/posts/${post.id}/like`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        setCurrentPost(prev => ({
-          ...prev,
-          likeCount: prev.likeCount + 1
-        }));
-      }
+      // Gọi mutation từ useLikePost hook
+      const newLikeCount = await likePostMutation.mutateAsync(post.id);
+      
+      // Cập nhật state local
+      setCurrentPost(prev => ({
+        ...prev,
+        likeCount: newLikeCount
+      }));
     } catch (error) {
       console.error('Failed to like post:', error);
-    } finally {
-      setIsLoading(false);
+      alert('Có lỗi xảy ra khi thích bài viết');
     }
   };
 
@@ -175,6 +168,7 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
 
     try {
+      // TODO: Implement newsletter API
       const response = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: {
@@ -235,7 +229,7 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
       <header className={styles.postHeader}>
         <div className={styles.postMeta}>
           <Link 
-            href={`/categories/${currentPost.categoryId}`} 
+            href={`/categories/${currentPost.categoryName?.toLowerCase()}`} 
             className={styles.categoryBadge}
           >
             {currentPost.categoryName || 'Tin tức'}
@@ -259,8 +253,9 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
               </span>
               <button 
                 onClick={handleLike}
-                disabled={isLoading}
+                disabled={likePostMutation.isPending}
                 className={styles.statButton}
+                aria-label="Thích bài viết"
               >
                 <span className={styles.stat}>
                   <svg className={styles.statIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -331,14 +326,12 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
             />
           </div>
-          {currentPost.thumbnailUrl && (
-            <div className={styles.imageCaption}>
-              <svg className={styles.captionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Hình ảnh minh họa</span>
-            </div>
-          )}
+          <div className={styles.imageCaption}>
+            <svg className={styles.captionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Hình ảnh minh họa</span>
+          </div>
         </div>
       )}
 
@@ -363,7 +356,7 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
                 Thẻ bài viết
               </h3>
               <div className={styles.tagsList}>
-                {currentPost.tags.map((tag) => (
+                {currentPost.tags.map((tag:any) => (
                   <Link 
                     key={tag.id} 
                     href={`/tags/${tag.slug}`}
@@ -425,7 +418,7 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
                     <Link href={`/posts/${relatedPost.slug}`} className={styles.relatedLink}>
                       <div className={styles.relatedImage}>
                         <Image
-                          src={relatedPost.featuredImageUrl || '/images/logo.png'}
+                          src={relatedPost.featuredImageUrl || relatedPost.thumbnailUrl || '/images/logo.png'}
                           alt={relatedPost.title}
                           width={80}
                           height={60}
