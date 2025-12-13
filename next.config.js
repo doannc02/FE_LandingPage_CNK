@@ -26,9 +26,7 @@ const nextConfig = {
   generateEtags: true,
 
   // Experimental features for better performance
-  experimental: {
-    optimizeCss: true,
-  },
+  experimental: {},
 }
 
 module.exports = nextConfig
