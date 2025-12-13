@@ -78,19 +78,13 @@ export const postsApi = {
     try {
       console.log("Fetching posts with params:", params);
 
-      const response = await apiClient.get<
-        ApiResponse<PaginatedResponse<Post>>
-      >("/posts", { params });
+      const response = await apiClient.get<PaginatedResponse<Post>>("/posts", {
+        params,
+      });
 
       console.log("Posts API Response:", response.data);
 
-      // Backend trả về { success, data, error }
-      // data chứa PaginatedList<PostDto>
-      if (response.data && response.data.data) {
-        return response.data.data;
-      }
-
-      throw new Error(response.data.error || "Failed to fetch posts");
+      return response.data;
     } catch (error) {
       console.error("Error fetching posts:", error);
 
@@ -122,15 +116,13 @@ export const postsApi = {
 
   // ✅ GET /api/posts/slug/{slug} - Post by slug
   getPostBySlug: async (slug: string): Promise<PostDetailDto> => {
-    const response = await apiClient.get<ApiResponse<PostDetailDto>>(
-      `/posts/slug/${slug}`
-    );
+    const response = await apiClient.get<PostDetailDto>(`/posts/slug/${slug}`);
 
-    if (!response.data || !response.data.data) {
-      throw new Error(response.data.error || "Post not found");
+    if (!response.data) {
+      throw new Error("Post not found");
     }
-
-    return response.data.data;
+console.log('Fetched post by slug:', response.data);
+    return response.data;
   },
 
   // ✅ NEW: GET /api/posts/{slug}/related - Related posts

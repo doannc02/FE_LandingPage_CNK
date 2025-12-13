@@ -1,50 +1,43 @@
 // app/posts/[slug]/page.tsx
-import { notFound } from 'next/navigation';
-import PostDetail from '@/app/components/Postdetail';
-import { postsApi } from '@/app/lib/api/posts';
+'use client';
 
-interface PageProps {
-  params: {
-    slug: string;
-  };
-}
+import dynamic from 'next/dynamic';
+import { useParams } from 'next/navigation';
 
-export async function generateMetadata({ params }: PageProps) {
-  try {
-    const post = await postsApi.getPostBySlug(params.slug);
-    
-    return {
-      title: `${post.title} | Tin tức`,
-      description: post.excerpt || post.content?.substring(0, 160) + '...',
-      keywords: post.tags?.join(', '),
-      openGraph: {
-        title: post.title,
-        description: post.excerpt,
-        images: post.featuredImageUrl ? [post.featuredImageUrl] : [],
-        type: 'article',
-        publishedTime: post.publishedAt,
-        authors: [post.authorName],
-      },
-    };
-  } catch {
-    return null;
-  }
-}
+// ✅ Disable SSR - chỉ render client-side
+const PostPageContent = dynamic(() => import('./PostPageContent'), {
+  ssr: false,
+  loading: () => (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '60vh',
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{
+          width: '48px',
+          height: '48px',
+          border: '4px solid #f3f4f6',
+          borderTopColor: '#3b82f6',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+          margin: '0 auto 1rem',
+        }}></div>
+        <p style={{ color: '#64748b' }}>Đang tải...</p>
+      </div>
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  ),
+});
 
-export default async function PostPage({ params }: PageProps) {
-  try {
-    const post = await postsApi.getPostBySlug(params.slug);
-    
-    if (!post) {
-      notFound();
-    }
-    
-    // Lấy bài viết liên quan
-    const relatedPosts = await postsApi.getRelatedPosts(params.slug, 5);
-    
-    return <PostDetail post={post as any} relatedPosts={relatedPosts as any} />;
-  } catch (error) {
-    console.error('Error loading post:', error);
-    notFound();
-  }
+export default function PostPage() {
+  const params = useParams();
+  const slug = params.slug as string;
+
+  return <PostPageContent slug={slug} />;
 }

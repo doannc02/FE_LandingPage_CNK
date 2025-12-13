@@ -75,7 +75,8 @@ export default function NewsSimple() {
 
   const posts = postsData?.items || [];
   const totalCount = postsData?.totalCount || 0;
-
+ 
+  console.log('Rendered NewsSimple with posts:', posts, postsData);
   if (posts.length === 0) {
     return (
       <section style={{ padding: '5rem 2rem', background: '#0A0A0A', minHeight: '400px' }}>
