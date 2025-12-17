@@ -4,8 +4,8 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding-top: 8rem;
-  padding-bottom: 4rem;
+  padding-top: 5rem; /* Reduced from 8rem */
+  padding-bottom: 3rem; /* Reduced from 4rem */
 }
 
 .heroBackground {
@@ -20,6 +20,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  will-change: transform; /* Optimize for animations */
 }
 
 .heroBackground::before {
@@ -55,6 +56,7 @@
       rgba(255, 255, 255, 0.02) 10px,
       rgba(255, 255, 255, 0.02) 20px
     );
+  will-change: transform;
 }
 
 /* Shadow Animation - Người cầm côn */
@@ -68,6 +70,7 @@
   opacity: 0.4;
   pointer-events: none;
   filter: blur(2px) brightness(0.3);
+  will-change: transform, opacity;
 }
 
 .martialArtsShadow::before {
@@ -110,6 +113,7 @@
   background: radial-gradient(circle, rgba(196, 30, 58, 0.15) 0%, transparent 70%);
   filter: blur(60px);
   z-index: 3;
+  will-change: transform, rotate;
 }
 
 .heroContent {
@@ -149,8 +153,8 @@
 
 .titleMain {
   display: block;
-  font-size: clamp(3rem, 8vw, 6rem);
-  line-height: 1;
+  font-size: clamp(2.5rem, 7vw, 5rem); /* Reduced from clamp(3rem, 8vw, 6rem) */
+  line-height: 1.1;
   background: linear-gradient(135deg, var(--color-light) 0%, var(--color-primary) 50%, var(--color-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -161,7 +165,7 @@
 
 .titleSub {
   display: block;
-  font-size: clamp(2rem, 5vw, 4rem);
+  font-size: clamp(1.5rem, 4vw, 3rem); /* Reduced from clamp(2rem, 5vw, 4rem) */
   color: var(--color-secondary);
   letter-spacing: 0.3em;
   padding-left: 0.3em;
@@ -171,34 +175,35 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem; /* Reduced from 2rem */
 }
 
 .decorativeLine {
   width: 60px;
   height: 3px;
   background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  flex-shrink: 0;
 }
 
 .heroSubtitle p {
-  font-size: 1.2rem;
+  font-size: 1.1rem; /* Slightly reduced */
   color: var(--color-gray-light);
   line-height: 1.6;
   max-width: 500px;
 }
 
 .philosophy {
-  margin-bottom: 2rem;
-  padding: 2rem;
+  margin-bottom: 1.5rem; /* Reduced from 2rem */
+  padding: 1.5rem; /* Reduced from 2rem */
   background: rgba(212, 175, 55, 0.1);
   border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: 12px;
 }
 
 .philosophyTitle {
-  font-size: 1.3rem;
+  font-size: 1.2rem; /* Slightly reduced */
   color: var(--color-secondary);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem; /* Reduced from 1.5rem */
   text-align: center;
 }
 
@@ -226,8 +231,8 @@
   display: flex;
   align-items: center;
   gap: 2rem;
-  margin-bottom: 3rem;
-  padding: 2rem 0;
+  margin-bottom: 2rem; /* Reduced from 3rem */
+  padding: 1.5rem 0; /* Reduced from 2rem */
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   flex-wrap: wrap;
@@ -275,6 +280,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 15;
+  will-change: transform, opacity;
 }
 
 .imageWindowFrame {
@@ -295,11 +301,13 @@
   box-shadow: 
     0 0 40px rgba(212, 175, 55, 0.5),
     inset 0 0 20px rgba(212, 175, 55, 0.1);
+  will-change: box-shadow;
 }
 
 .windowImage {
   object-fit: cover;
   transition: transform 0.5s ease;
+  will-change: transform;
 }
 
 .imageWindowInner:hover .windowImage {
@@ -339,7 +347,7 @@
 }
 
 /* ========================================
-   ẢNH LỚN BÊN PHẢI (Alternative style)
+   ẢNH LỚN BÊNH PHẢI (Alternative style)
    ======================================== */
 
 .heroImage {
@@ -348,6 +356,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 5;
+  will-change: transform, opacity;
 }
 
 .imageContainer {
@@ -386,6 +395,7 @@
   backdrop-filter: blur(10px);
   box-shadow: 0 5px 20px rgba(196, 30, 58, 0.3);
   z-index: 3;
+  will-change: transform, rotate;
 }
 
 .floatingElement {
@@ -418,6 +428,7 @@
   color: var(--color-primary);
   cursor: pointer;
   z-index: 10;
+  will-change: transform;
 }
 
 /* ========================================
@@ -479,6 +490,11 @@
 }
 
 @media (max-width: 1024px) {
+  .hero {
+    padding-top: 4rem;
+    min-height: 90vh; /* Reduced from 100vh on tablet */
+  }
+
   .heroImageWindow {
     opacity: 0.5;
     right: 0;
@@ -518,9 +534,9 @@
 
 @media (max-width: 768px) {
   .hero {
-    padding-top: 6rem;
-    padding-bottom: 3rem;
-    min-height: auto;
+    padding-top: 5rem;
+    padding-bottom: 2rem;
+    min-height: auto; /* Let content determine height */
   }
 
   .heroBackground {
@@ -552,11 +568,11 @@
   }
 
   .titleMain {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 
   .titleSub {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 
   .heroSubtitle {
@@ -565,13 +581,25 @@
     margin-bottom: 1.5rem;
   }
 
+  .heroSubtitle p {
+    font-size: 1rem;
+  }
+
   .philosophy {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .philosophyTitle {
+    font-size: 1.1rem;
   }
 
   .philosophyItems {
     gap: 1rem;
+  }
+
+  .philosophyItem {
+    font-size: 0.9rem;
   }
 
   .heroStats {
@@ -601,26 +629,35 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding-top: 5rem;
+    padding-top: 4.5rem;
+    padding-bottom: 1.5rem;
   }
 
   .titleMain {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 
   .titleSub {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .heroSubtitle p {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .philosophyTitle {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .philosophyItem {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .philosophyIcon {
+    font-size: 1.75rem;
+  }
+
+  .statNumber {
+    font-size: 2rem;
   }
 }

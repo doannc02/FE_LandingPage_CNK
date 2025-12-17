@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePosts } from "../lib/hooks/usePosts";
 
@@ -11,9 +11,14 @@ const formatDate = (dateString: string | null) => {
 
 export default function NewsSimple() {
   const [currentPage] = useState(1);
+  const [isMounted, setIsMounted] = useState(false);
   const pageSize = 8;
   const sectionRef = useRef<HTMLElement>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const { data: postsData, isLoading, error } = usePosts({
     pageNumber: currentPage,
@@ -28,7 +33,6 @@ export default function NewsSimple() {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !hasAnimated) {
             setHasAnimated(true);
-            // Unobserve after first trigger
             observer.unobserve(entry.target);
           }
         });
@@ -48,13 +52,15 @@ export default function NewsSimple() {
 
   if (isLoading) {
     return (
-      <section style={{ padding: '5rem 2rem', background: '#0A0A0A', minHeight: '400px' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', color: 'white', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '2rem' }}>Đang tải...</h2>
+      <section style={{ padding: '5rem 2rem', background: '#f8fafc', minHeight: '400px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', color: '#1e293b', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '2rem', color: '#1e293b' }}>Đang tải tin tức...</h2>
           <div style={{ display: 'grid', gap: '1rem' }}>
             {[1,2,3].map(i => (
-              <div key={i} style={{ background: '#1A1A1A', padding: '2rem', borderRadius: '8px' }}>
-                Loading...
+              <div key={i} style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                <div style={{ height: '150px', background: '#e2e8f0', borderRadius: '4px', marginBottom: '1rem' }}></div>
+                <div style={{ height: '20px', background: '#e2e8f0', borderRadius: '4px', marginBottom: '0.5rem' }}></div>
+                <div style={{ height: '20px', background: '#e2e8f0', borderRadius: '4px', width: '70%' }}></div>
               </div>
             ))}
           </div>
@@ -65,9 +71,10 @@ export default function NewsSimple() {
 
   if (error) {
     return (
-      <section style={{ padding: '5rem 2rem', background: '#0A0A0A', minHeight: '400px' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', color: 'white', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '2rem', color: '#ef4444' }}>Lỗi: {error.message}</h2>
+      <section style={{ padding: '5rem 2rem', background: '#f8fafc', minHeight: '400px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', color: '#1e293b', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '2rem', color: '#ef4444' }}>Lỗi tải tin tức</h2>
+          <p style={{ color: '#64748b', marginTop: '1rem' }}>{error.message}</p>
         </div>
       </section>
     );
@@ -76,12 +83,12 @@ export default function NewsSimple() {
   const posts = postsData?.items || [];
   const totalCount = postsData?.totalCount || 0;
  
-  console.log('Rendered NewsSimple with posts:', posts, postsData);
   if (posts.length === 0) {
     return (
-      <section style={{ padding: '5rem 2rem', background: '#0A0A0A', minHeight: '400px' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', color: 'white', textAlign: 'center' }}>
+      <section style={{ padding: '5rem 2rem', background: '#f8fafc', minHeight: '400px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', color: '#1e293b', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2rem' }}>Không có bài viết</h2>
+          <p style={{ color: '#64748b', marginTop: '1rem' }}>Vui lòng quay lại sau</p>
         </div>
       </section>
     );
@@ -96,7 +103,7 @@ export default function NewsSimple() {
       id="news"
       style={{ 
         padding: '5rem 2rem', 
-        background: 'linear-gradient(180deg, #0A0A0A 0%, #1A1A1A 100%)',
+        background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
         minHeight: '600px'
       }}
     >
@@ -176,6 +183,12 @@ export default function NewsSimple() {
             box-shadow: 0 4px 30px rgba(245, 158, 11, 0.5);
           }
         }
+
+        @media (max-width: 768px) {
+          .responsive-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
       `}</style>
 
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
@@ -187,7 +200,7 @@ export default function NewsSimple() {
           <h2 style={{ 
             fontSize: '2.5rem', 
             fontWeight: 700, 
-            color: '#fff', 
+            color: '#1e293b', 
             marginBottom: '1rem',
             letterSpacing: '-0.02em'
           }}>
@@ -196,15 +209,15 @@ export default function NewsSimple() {
               position: 'relative'
             }}>Sự Kiện</span>
           </h2>
-          <p style={{ fontSize: '1.125rem', color: '#94a3b8' }}>
+          <p style={{ fontSize: '1.125rem', color: '#64748b' }}>
             Cập nhật {totalCount} bài viết về hoạt động của câu lạc bộ
           </p>
         </div>
 
         {/* Featured Post */}
-        {featuredPost && (
+        {featuredPost && isMounted && (
           <div 
-            className={`animate-item featured-hover ${hasAnimated ? 'visible' : ''}`}
+            className={`animate-item featured-hover responsive-grid ${hasAnimated ? 'visible' : ''}`}
             style={{
               display: 'grid',
               gridTemplateColumns: window.innerWidth > 768 ? '1.2fr 1fr' : '1fr',
@@ -236,7 +249,7 @@ export default function NewsSimple() {
                   e.currentTarget.src = '/images/banner.png';
                 }}
               />
-              <div 
+              <span 
                 className="badge-pulse"
                 style={{
                   position: 'absolute',
@@ -246,33 +259,33 @@ export default function NewsSimple() {
                   color: 'white',
                   padding: '0.5rem 1.25rem',
                   borderRadius: '50px',
-                  fontSize: '0.875rem',
                   fontWeight: 600,
+                  fontSize: '0.875rem',
                   backdropFilter: 'blur(8px)'
                 }}
               >
                 ⭐ Nổi bật
-              </div>
+              </span>
             </div>
 
             <div style={{ padding: '3rem 2.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <span style={{
-                  background: 'linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1))',
+                  background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))',
                   color: '#3b82f6',
                   padding: '0.4rem 1rem',
                   borderRadius: '50px',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  border: '1px solid rgba(59,130,246,0.2)'
+                  border: '1px solid rgba(59, 130, 246, 0.2)'
                 }}>
                   {featuredPost.categoryName || 'Tin tức'}
                 </span>
                 <span style={{ 
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  color: '#64748b', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem', 
+                  color: '#64748b',
                   fontSize: '0.875rem',
                   fontWeight: 500
                 }}>
@@ -280,16 +293,11 @@ export default function NewsSimple() {
                 </span>
               </div>
 
-              <h3 style={{ 
-                fontSize: '1.875rem', 
-                lineHeight: 1.3, 
-                marginBottom: '1rem',
-                color: '#1e293b'
-              }}>
+              <h3 style={{ fontSize: '1.875rem', lineHeight: 1.3, marginBottom: '1rem' }}>
                 <Link
                   href={`/posts/${featuredPost.slug}`}
                   style={{ 
-                    color: 'inherit', 
+                    color: '#1e293b', 
                     textDecoration: 'none',
                     transition: 'color 0.2s'
                   }}
@@ -300,33 +308,36 @@ export default function NewsSimple() {
                 </Link>
               </h3>
 
-              <p style={{ 
-                color: '#64748b', 
-                lineHeight: 1.6, 
+              <p style={{
+                color: '#64748b',
+                lineHeight: 1.6,
                 marginBottom: '2rem',
                 fontSize: '1.0625rem'
               }}>
-                {featuredPost.excerpt || 'Không có mô tả'}
+                {featuredPost.excerpt}
               </p>
 
-              <div style={{ 
-                display: 'flex', 
-                gap: '1.25rem',
-                color: '#64748b',
-                fontSize: '0.875rem',
-                marginBottom: '1.5rem'
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '2rem',
+                paddingTop: '1rem',
+                borderTop: '1px solid #f1f5f9'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                  <span>👁️</span>
-                  <span style={{ fontWeight: 600, color: '#475569' }}>{featuredPost.viewCount || 0}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                  <span>❤️</span>
-                  <span style={{ fontWeight: 600, color: '#475569' }}>{featuredPost.likeCount || 0}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                  <span>💬</span>
-                  <span style={{ fontWeight: 600, color: '#475569' }}>{featuredPost.commentCount || 0}</span>
+                <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.875rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                    <span>👁️</span>
+                    <span style={{ fontWeight: 600, color: '#475569' }}>{featuredPost.viewCount || 0}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                    <span>❤️</span>
+                    <span style={{ fontWeight: 600, color: '#475569' }}>{featuredPost.likeCount || 0}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                    <span>💬</span>
+                    <span style={{ fontWeight: 600, color: '#475569' }}>{featuredPost.commentCount || 0}</span>
+                  </div>
                 </div>
               </div>
 
@@ -360,7 +371,9 @@ export default function NewsSimple() {
           gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
           gap: '2rem',
           marginBottom: '4rem'
-        }}>
+        }}
+        className="responsive-grid"
+        >
           {regularPosts.map((post, index) => (
             <article
               key={post.id}
@@ -512,7 +525,7 @@ export default function NewsSimple() {
           style={{ 
             textAlign: 'center', 
             paddingTop: '3rem',
-            borderTop: '1px solid rgba(255,255,255,0.1)',
+            borderTop: '1px solid #cbd5e1',
             transitionDelay: '0.6s'
           }}
         >
@@ -525,11 +538,11 @@ export default function NewsSimple() {
             flexWrap: 'wrap',
             gap: '1rem'
           }}>
-            <p style={{ fontSize: '0.9375rem', color: '#94a3b8', margin: 0 }}>
-              Hiển thị <strong style={{ color: '#fff' }}>{posts.length}</strong> trên tổng số{" "}
-              <strong style={{ color: '#fff' }}>{totalCount}</strong> bài viết
+            <p style={{ fontSize: '0.9375rem', color: '#64748b', margin: 0 }}>
+              Hiển thị <strong style={{ color: '#1e293b' }}>{posts.length}</strong> trên tổng số{" "}
+              <strong style={{ color: '#1e293b' }}>{totalCount}</strong> bài viết
             </p>
-            <p style={{ fontSize: '0.9375rem', color: '#94a3b8', margin: 0 }}>
+            <p style={{ fontSize: '0.9375rem', color: '#64748b', margin: 0 }}>
               Trang {currentPage} / {Math.ceil(totalCount / pageSize)}
             </p>
           </div>

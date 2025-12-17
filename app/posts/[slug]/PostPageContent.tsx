@@ -1,17 +1,15 @@
 // app/posts/[slug]/PostPageContent.tsx
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { usePostBySlug, useRelatedPosts } from '@/app/lib/hooks/usePosts';
 import PostDetail from '@/app/components/Postdetail';
 import Link from 'next/link';
-import { useState } from 'react';
 
 interface Props {
   slug: string;
 }
 
-function PostContent({ slug }: Props) {
+export default function PostPageContent({ slug }: Props) {
   const { data: post, isLoading, error } = usePostBySlug(slug);
   const { data: relatedPosts = [] } = useRelatedPosts(slug, 5);
 
@@ -100,22 +98,4 @@ function PostContent({ slug }: Props) {
   }
 
   return <PostDetail post={post as any} relatedPosts={relatedPosts as any[]} />;
-}
-
-export default function PostPageContent({ slug }: Props) {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 5 * 60 * 1000,
-        retry: 1,
-        refetchOnWindowFocus: false,
-      },
-    },
-  }));
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <PostContent slug={slug} />
-    </QueryClientProvider>
-  );
 }

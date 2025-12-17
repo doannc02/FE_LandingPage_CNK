@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation'; // Import usePathname
-import Image from 'next/image'; // Import Image component
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import styles from './Header.module.css';
 
@@ -10,24 +10,71 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentHash, setCurrentHash] = useState<string>('');
-  const pathname = usePathname(); // Get current path
+  const pathname = usePathname();
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastScrollY = useRef(0);
 
+  // Optimized scroll handler with debounce and threshold
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      
+      // Only update if scroll difference is significant (reduces repaints)
+      if (Math.abs(currentScrollY - lastScrollY.current) < 5) {
+        return;
+      }
+      
+      lastScrollY.current = currentScrollY;
+      
+      // Clear previous timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      // Debounce the state update to prevent flickering
+      scrollTimeoutRef.current = setTimeout(() => {
+        const shouldBeScrolled = currentScrollY > 50;
+        setIsScrolled((prev) => {
+          // Only update if state actually changes
+          return prev !== shouldBeScrolled ? shouldBeScrolled : prev;
+        });
+      }, 10); // Small delay to batch updates
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Use passive listener for better scroll performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
   }, []);
 
-  // Track the hash portion of the URL so we can highlight active section links (fixes bug where usePathname never equals '#hash' values)
+  // Track hash changes
   useEffect(() => {
     const updateHash = () => setCurrentHash(window.location.hash || '');
     updateHash();
-    window.addEventListener('hashchange', updateHash);
+    window.addEventListener('hashchange', updateHash, { passive: true });
     return () => window.removeEventListener('hashchange', updateHash);
   }, []);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.classList.add('menuOpen');
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('menuOpen');
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.classList.remove('menuOpen');
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   const navItems = [
     { label: 'Trang chủ', href: '#home' },
@@ -38,36 +85,41 @@ export default function Header() {
     { label: 'Liên hệ', href: '#contact' },
   ];
 
-  const isItemActive = (href: string) => {
-    // If the currentHash matches the href, it's active
+  const isItemActive = useCallback((href: string) => {
     if (currentHash === href) return true;
-    // If there's no hash (top of page) treat '#home' as active on the homepage
-    if (!currentHash && (href === '#home') && (pathname === '/' || pathname === '')) return true;
+    if (!currentHash && href === '#home' && (pathname === '/' || pathname === '')) return true;
     return false;
-  };
+  }, [currentHash, pathname]);
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
 
-    // Get the target section ID from href (remove the #)
     const targetId = href.substring(1);
     const targetElement = document.getElementById(targetId);
 
     if (targetElement) {
-      // Smooth scroll to the element
-      targetElement.scrollIntoView({
+      // Calculate header height for offset
+      const headerHeight = 80;
+      const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+
+      // Use native smooth scroll for better performance
+      window.scrollTo({
+        top: targetPosition,
         behavior: 'smooth',
-        block: 'start',
       });
 
-      // Update the URL hash after scrolling
+      // Update URL hash
       setTimeout(() => {
         window.history.pushState(null, '', href);
         setCurrentHash(href);
       }, 100);
     }
-  };
+  }, []);
+
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(prev => !prev);
+  }, []);
 
   return (
     <motion.header
@@ -84,11 +136,12 @@ export default function Header() {
             transition={{ type: 'spring', stiffness: 400 }}
           >
             <Image 
-              src="/images/logo_cnk.jpg" 
+              src="/images/logo.png" 
               alt="CLB Côn Nhị Khúc Hà Đông"
               width={50}
               height={50}
               className={styles.logoImage}
+              priority
             />
             <div className={styles.logoText}>
               <h1>CÔN NHỊ KHÚC</h1>
@@ -101,7 +154,7 @@ export default function Header() {
               <motion.a
                 key={item.href}
                 href={item.href}
-                className={`${styles.navLink} ${isItemActive(item.href) ? styles.active : ''}`} // Highlight active menu using hash-aware check
+                className={`${styles.navLink} ${isItemActive(item.href) ? styles.active : ''}`}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -125,7 +178,7 @@ export default function Header() {
           <button
             type="button"
             className={styles.mobileMenuToggle}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            onClick={toggleMobileMenu}
             aria-label="Toggle menu"
             aria-expanded={isMobileMenuOpen}
           >
