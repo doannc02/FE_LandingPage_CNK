@@ -146,7 +146,7 @@
 
 .featureTitle {
   font-size: 1.3rem;
-  color: var(--color-light);
+  color: var(--color-white);
   margin-bottom: 1rem;
   line-height: 1.3;
 }
@@ -154,7 +154,7 @@
 .featureDescription {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: var(--color-gray-light);
+  color: var(--color-white);
 }
 
 .featureAccent {

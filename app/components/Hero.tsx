@@ -166,7 +166,7 @@ export default function Hero() {
               {/* Badge góc trên */}
               <div className={styles.windowBadge}>
                 <span>⭐</span>
-                <span>CLB CHÍNH THỐNG</span>
+                <span className={styles.floatingText}>CLB CHÍNH THỐNG</span>
               </div>
             </motion.div>
 

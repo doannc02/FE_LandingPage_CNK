@@ -494,7 +494,7 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
                     >
                       <Link href={`/posts/${relatedPost.slug}`} className={styles.relatedLink}>
                         <div className={styles.relatedImage}>
-                          <Image
+                          <img
                             src={relatedPost.featuredImageUrl || relatedPost.thumbnailUrl || DEFAULT_THUMBNAIL}
                             alt={relatedPost.title}
                             width={80}
