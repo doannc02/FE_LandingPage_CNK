@@ -326,7 +326,7 @@ export default function PostDetail({ post, relatedPosts }: PostDetailProps) {
           <div className={styles.authorSection}>
             <div className={styles.authorInfo}>
               <div className={styles.authorAvatar}>
-                <Image
+                <img
                   src={currentPost.authorAvatar || DEFAULT_AVATAR}
                   alt={currentPost.authorName || 'Tác giả'}
                   width={56}
