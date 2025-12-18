@@ -12,16 +12,16 @@ export const metadata: Metadata = {
   authors: [{ name: 'CLB Côn Nhị Khúc Hà Đông' }],
   creator: 'CLB Côn Nhị Khúc Hà Đông',
   publisher: 'CLB Côn Nhị Khúc Hà Đông',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://nunchaku-hadong.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://fe-landing-page-cnk.vercel.app'),
   alternates: {
-    canonical: '/',
+    canonical: 'https://fe-landing-page-cnk.vercel.app/',
   },
   openGraph: {
     title: 'Câu lạc bộ Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp',
     description: 'Nơi rèn luyện tinh thần chiến binh, khơi nguồn sức mạnh nội tại. Đào tạo côn nhị khúc chuyên nghiệp từ cơ bản đến nâng cao tại Hà Đông, Hà Nội.',
     type: 'website',
     locale: 'vi_VN',
-    url: '/',
+    url: 'https://fe-landing-page-cnk.vercel.app',
     siteName: 'CLB Côn Nhị Khúc Hà Đông',
     images: [
       {
@@ -63,7 +63,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://nunchaku-hadong.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://fe-landing-page-cnk.vercel.app";
 
   // Enhanced JSON-LD structured data
   const organizationSchema = {
