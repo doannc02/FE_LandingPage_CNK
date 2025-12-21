@@ -1,18 +1,19 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://103.126.161.89/api';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://103.126.161.89/api";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Request interceptor - Thêm token vào header
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,9 +30,9 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
       // Token hết hạn - Redirect to login
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      window.location.href = '/login';
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
