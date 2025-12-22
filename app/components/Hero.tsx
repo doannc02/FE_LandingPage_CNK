@@ -85,15 +85,15 @@ export default function Hero() {
             <div className={styles.philosophyItems}>
               <div className={styles.philosophyItem}>
                 <span className={styles.philosophyIcon}>❤️</span>
-                <span className={styles.philosophyText}>Sống nhân hậu</span>
+                <span className={styles.statLabel}>Sống nhân hậu</span>
               </div>
               <div className={styles.philosophyItem}>
                 <span className={styles.philosophyIcon}>🎯</span>
-                <span className={styles.philosophyText}>Nuôi chí bền</span>
+                <span className={styles.statLabel}>Nuôi chí bền</span>
               </div>
               <div className={styles.philosophyItem}>
                 <span className={styles.philosophyIcon}>💪</span>
-                <span className={styles.philosophyText}>
+                <span className={styles.statLabel}>
                   Hành động dũng cảm
                 </span>
               </div>
