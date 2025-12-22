@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'uM11aOKiwVFxnJR4GrJGMNxMewVIjJnudfdmYoabH6k',
+    google: 'IVu3Pj14kgpTntrxCsTV2uTl6N_q4o7aFBlSD_iWjQk',
   },
   category: 'sports',
 };
