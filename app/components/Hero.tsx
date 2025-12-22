@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import styles from './Hero.module.css';
+import { motion } from "framer-motion";
+import Image from "next/image";
+import styles from "./Hero.module.css";
 
 export default function Hero() {
   const containerVariants = {
@@ -22,7 +22,7 @@ export default function Hero() {
       y: 0,
       opacity: 1,
       transition: {
-        type: 'spring',
+        type: "spring",
         stiffness: 100,
         damping: 12,
       },
@@ -42,7 +42,7 @@ export default function Hero() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: 'linear',
+            ease: "linear",
           }}
         />
       </div>
@@ -70,25 +70,32 @@ export default function Hero() {
           <motion.div className={styles.heroSubtitle} variants={itemVariants}>
             <div className={styles.decorativeLine}></div>
             <p>
-              CLB rèn luyện thể chất và tinh thần qua côn nhị khúc nghệ thuật.{' '}
-              <strong style={{ color: 'var(--color-secondary)' }}>MIỄN PHÍ</strong> cho mọi người tại Hà Đông
+              CLB rèn luyện thể chất và tinh thần qua côn nhị khúc nghệ thuật.{" "}
+              <strong style={{ color: "var(--color-secondary)" }}>
+                MIỄN PHÍ
+              </strong>{" "}
+              cho mọi người tại Hà Đông
             </p>
           </motion.div>
 
           <motion.div className={styles.philosophy} variants={itemVariants}>
-            <h3 className={styles.philosophyTitle}>Tôn chỉ: "Nhân - Chí - Dũng"</h3>
+            <h3 className={styles.philosophyTitle}>
+              Tôn chỉ: "Nhân - Chí - Dũng"
+            </h3>
             <div className={styles.philosophyItems}>
               <div className={styles.philosophyItem}>
                 <span className={styles.philosophyIcon}>❤️</span>
-                <span>Sống nhân hậu</span>
+                <span className={styles.philosophyText}>Sống nhân hậu</span>
               </div>
               <div className={styles.philosophyItem}>
                 <span className={styles.philosophyIcon}>🎯</span>
-                <span>Nuôi chí bền</span>
+                <span className={styles.philosophyText}>Nuôi chí bền</span>
               </div>
               <div className={styles.philosophyItem}>
                 <span className={styles.philosophyIcon}>💪</span>
-                <span>Hành động dũng cảm</span>
+                <span className={styles.philosophyText}>
+                  Hành động dũng cảm
+                </span>
               </div>
             </div>
           </motion.div>
@@ -140,9 +147,9 @@ export default function Hero() {
               className={styles.imageWindowInner}
               animate={{
                 boxShadow: [
-                  '0 0 30px rgba(212, 175, 55, 0.4)',
-                  '0 0 50px rgba(212, 175, 55, 0.6)',
-                  '0 0 30px rgba(212, 175, 55, 0.4)',
+                  "0 0 30px rgba(212, 175, 55, 0.4)",
+                  "0 0 50px rgba(212, 175, 55, 0.6)",
+                  "0 0 30px rgba(212, 175, 55, 0.4)",
                 ],
               }}
               transition={{
@@ -151,18 +158,18 @@ export default function Hero() {
               }}
             >
               {/* Ảnh chính trong cửa sổ */}
-              <Image 
+              <Image
                 src="/images/logo.png"
                 alt="Logo CLB Côn Nhị Khúc"
                 fill
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: "cover" }}
                 className={styles.windowImage}
                 priority
               />
-              
+
               {/* Overlay gradient */}
               <div className={styles.imageWindowOverlay}></div>
-              
+
               {/* Badge góc trên */}
               <div className={styles.windowBadge}>
                 <span>⭐</span>
@@ -180,12 +187,12 @@ export default function Hero() {
               transition={{
                 duration: 4,
                 repeat: Infinity,
-                ease: 'easeInOut',
+                ease: "easeInOut",
               }}
             >
               <span className={styles.floatingText}>Mạnh mẽ</span>
             </motion.div>
-            
+
             <motion.div
               className={styles.floatingElement2}
               animate={{
@@ -195,7 +202,7 @@ export default function Hero() {
               transition={{
                 duration: 5,
                 repeat: Infinity,
-                ease: 'easeInOut',
+                ease: "easeInOut",
               }}
             >
               <span className={styles.floatingText}>Linh hoạt</span>
