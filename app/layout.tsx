@@ -29,10 +29,10 @@ export const metadata: Metadata = {
   creator: "CLB Côn Nhị Khúc Hà Đông",
   publisher: "CLB Côn Nhị Khúc Hà Đông",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://fe-landing-page-cnk.vercel.app"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.dangcapnc.io.vn"
   ),
   alternates: {
-    canonical: "https://fe-landing-page-cnk.vercel.app/",
+    canonical: "https://www.dangcapnc.io.vn/",
   },
   openGraph: {
     title: "Câu lạc bộ Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
       "Nơi rèn luyện tinh thần chiến binh, khơi nguồn sức mạnh nội tại. Đào tạo côn nhị khúc chuyên nghiệp từ cơ bản đến nâng cao tại Hà Đông, Hà Nội.",
     type: "website",
     locale: "vi_VN",
-    url: "https://fe-landing-page-cnk.vercel.app",
+    url: "https://www.dangcapnc.io.vn",
     siteName: "CLB Côn Nhị Khúc Hà Đông",
     images: [
       {
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "IVu3Pj14kgpTntrxCsTV2uTl6N_q4o7aFBlSD_iWjQk",
+    google: "Ww-y5cxA_DgBF5eaGspplF5nxrSU52APgwjQxEYrybY",
   },
   category: "sports",
   icons: {
@@ -90,8 +90,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://fe-landing-page-cnk.vercel.app";
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.dangcapnc.io.vn";
 
   // Enhanced JSON-LD structured data
   const organizationSchema = {
