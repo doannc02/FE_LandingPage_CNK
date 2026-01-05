@@ -1,0 +1,278 @@
+{
+  "page": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "tenantId": "tenant-123",
+    "title": "Trang chủ",
+    "slug": "home",
+    "path": "/",
+    "isHomePage": true,
+    "seo": {
+      "metaTitle": "Câu lạc bộ Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
+      "metaDescription": "Nơi rèn luyện tinh thần chiến binh, đào tạo côn nhị khúc chuyên nghiệp tại Hà Đông, Hà Nội.",
+      "metaKeywords": "côn nhị khúc, nunchaku, võ thuật, hà đông",
+      "ogImage": "https://cdn.example.com/og-image.jpg"
+    }
+  },
+  "theme": {
+    "id": "theme-456",
+    "name": "Martial Arts Dark",
+    "primaryColor": "#C41E3A",
+    "secondaryColor": "#D4AF37",
+    "fontDisplay": "Oswald",
+    "fontBody": "Roboto",
+    "logo": "https://cdn.example.com/logo.png",
+    "favicon": "https://cdn.example.com/favicon.ico"
+  },
+  "sections": [
+    {
+      "id": "section-1",
+      "type": "hero",
+      "name": "Hero Section",
+      "displayOrder": 1,
+      "isActive": true,
+      "config": {
+        "title": "Côn Nhị Khúc",
+        "subtitle": "Hà Đông",
+        "description": "CLB rèn luyện thể chất và tinh thần qua côn nhị khúc nghệ thuật. MIỄN PHÍ cho mọi người tại Hà Đông",
+        "backgroundImage": "https://cdn.example.com/hero-bg.jpg",
+        "backgroundOverlay": "rgba(0, 0, 0, 0.5)",
+        "philosophy": {
+          "title": "Tôn chỉ: Nhân - Chí - Dũng",
+          "items": [
+            {
+              "icon": "❤️",
+              "text": "Sống nhân hậu"
+            },
+            {
+              "icon": "🎯",
+              "text": "Nuôi chí bền"
+            },
+            {
+              "icon": "💪",
+              "text": "Hành động dũng cảm"
+            }
+          ]
+        },
+        "stats": [
+          {
+            "number": "10+",
+            "label": "Năm kinh nghiệm"
+          },
+          {
+            "number": "500+",
+            "label": "Học viên"
+          },
+          {
+            "number": "50+",
+            "label": "Giải thưởng"
+          }
+        ],
+        "ctaButtons": [
+          {
+            "text": "Đăng ký học",
+            "link": "/register",
+            "style": "primary",
+            "openInNewTab": false
+          },
+          {
+            "text": "Xem khóa học",
+            "link": "/courses",
+            "style": "outline",
+            "openInNewTab": false
+          }
+        ],
+        "imageWindow": {
+          "enabled": true,
+          "imageUrl": "https://cdn.example.com/logo.png",
+          "badge": {
+            "icon": "⭐",
+            "text": "CLB CHÍNH THỐNG"
+          },
+          "floatingElements": [
+            {
+              "text": "Mạnh mẽ",
+              "position": "top-right"
+            },
+            {
+              "text": "Linh hoạt",
+              "position": "bottom-left"
+            }
+          ]
+        },
+        "animation": {
+          "enabled": true,
+          "type": "fade-in-up",
+          "duration": 0.8,
+          "delay": 0.3
+        }
+      }
+    },
+    {
+      "id": "section-2",
+      "type": "about",
+      "name": "About Section",
+      "displayOrder": 2,
+      "isActive": true,
+      "config": {
+        "title": "Về chúng tôi",
+        "subtitle": "CLB Côn Nhị Khúc Hà Đông",
+        "description": "Câu lạc bộ Côn Nhị Khúc Hà Đông được thành lập với sứ mệnh phát triển môn võ nghệ thuật truyền thống...",
+        "image": "https://cdn.example.com/about-image.jpg",
+        "features": [
+          {
+            "icon": "🥋",
+            "title": "Đào tạo chuyên nghiệp",
+            "description": "Hướng dẫn từ cơ bản đến nâng cao"
+          },
+          {
+            "icon": "🏆",
+            "title": "Giải thưởng quốc gia",
+            "description": "Nhiều học viên đạt thành tích cao"
+          },
+          {
+            "icon": "👥",
+            "title": "Cộng đồng thân thiện",
+            "description": "Môi trường luyện tập tích cực"
+          }
+        ],
+        "cta": {
+          "text": "Tìm hiểu thêm",
+          "link": "/about"
+        }
+      }
+    },
+    {
+      "id": "section-3",
+      "type": "blog",
+      "name": "News & Blog",
+      "displayOrder": 3,
+      "isActive": true,
+      "config": {
+        "title": "Tin tức & Sự kiện",
+        "subtitle": "Cập nhật tin tức mới nhất từ CLB",
+        "layout": "grid",
+        "columns": 3,
+        "showExcerpt": true,
+        "showThumbnail": true,
+        "showAuthor": true,
+        "showDate": true,
+        "showCategory": true,
+        "itemsPerPage": 6,
+        "filter": {
+          "categoryId": null,
+          "isFeatured": false,
+          "status": "Published"
+        },
+        "cta": {
+          "text": "Xem tất cả bài viết",
+          "link": "/posts"
+        }
+      }
+    },
+    {
+      "id": "section-4",
+      "type": "courses",
+      "name": "Courses Section",
+      "displayOrder": 4,
+      "isActive": true,
+      "config": {
+        "title": "Khóa học",
+        "subtitle": "Chương trình đào tạo toàn diện",
+        "layout": "carousel",
+        "autoplay": true,
+        "autoplaySpeed": 5000,
+        "showPrice": true,
+        "showDuration": true,
+        "showLevel": true,
+        "cta": {
+          "text": "Xem tất cả khóa học",
+          "link": "/courses"
+        }
+      }
+    },
+    {
+      "id": "section-5",
+      "type": "gallery",
+      "name": "Photo Gallery",
+      "displayOrder": 5,
+      "isActive": true,
+      "config": {
+        "title": "Thư viện ảnh",
+        "subtitle": "Khoảnh khắc đáng nhớ",
+        "layout": "masonry",
+        "columns": 4,
+        "lightbox": true,
+        "showCaption": true,
+        "filter": {
+          "albumId": null
+        }
+      }
+    },
+    {
+      "id": "section-6",
+      "type": "contact",
+      "name": "Contact Section",
+      "displayOrder": 6,
+      "isActive": true,
+      "config": {
+        "title": "Liên hệ",
+        "subtitle": "Đăng ký tham gia hoặc liên hệ tư vấn",
+        "showMap": true,
+        "mapLocation": {
+          "lat": 20.9707,
+          "lng": 105.7843,
+          "zoom": 15
+        },
+        "contactInfo": {
+          "address": "Hà Đông, Hà Nội",
+          "phone": "0123-456-789",
+          "email": "contact@conkhuchadong.vn",
+          "workingHours": "Thứ 2 - Chủ nhật: 18:00 - 20:00"
+        },
+        "form": {
+          "enabled": true,
+          "fields": [
+            {
+              "name": "fullName",
+              "label": "Họ và tên",
+              "type": "text",
+              "required": true
+            },
+            {
+              "name": "phone",
+              "label": "Số điện thoại",
+              "type": "tel",
+              "required": true
+            },
+            {
+              "name": "email",
+              "label": "Email",
+              "type": "email",
+              "required": false
+            },
+            {
+              "name": "message",
+              "label": "Nội dung",
+              "type": "textarea",
+              "required": true
+            }
+          ],
+          "submitText": "Gửi liên hệ",
+          "successMessage": "Cảm ơn bạn! Chúng tôi sẽ liên hệ lại sớm."
+        },
+        "socialLinks": [
+          {
+            "platform": "facebook",
+            "url": "https://facebook.com/conkhuchadong",
+            "icon": "facebook"
+          },
+          {
+            "platform": "youtube",
+            "url": "https://youtube.com/conkhuchadong",
+            "icon": "youtube"
+          }
+        ]
+      }
+    }
+  ]
+}
