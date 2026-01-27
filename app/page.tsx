@@ -9,6 +9,7 @@ import Courses from "./components/Courses";
 import Gallery from "./components/Gallery";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import PopupRegistration from "./components/PopupRegistration";
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
@@ -20,21 +21,25 @@ export default function HomePage() {
   // Simple loading state
   if (!mounted) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0A0A0A'
-      }}>
-        <div style={{
-          width: '48px',
-          height: '48px',
-          border: '4px solid #333',
-          borderTopColor: '#C41E3A',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }}></div>
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#0A0A0A",
+        }}
+      >
+        <div
+          style={{
+            width: "48px",
+            height: "48px",
+            border: "4px solid #333",
+            borderTopColor: "#C41E3A",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite",
+          }}
+        ></div>
         <style>{`
           @keyframes spin {
             to { transform: rotate(360deg); }
@@ -46,6 +51,8 @@ export default function HomePage() {
 
   return (
     <main className="relative">
+      <PopupRegistration />
+
       <Header />
       <Hero />
       <About />
