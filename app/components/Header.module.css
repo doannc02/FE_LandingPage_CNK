@@ -6,15 +6,14 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: transparent;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  will-change: background-color, box-shadow;
+  background: rgba(10, 10, 10, 0.95); /* Thêm nền đen ngay từ đầu */
+  backdrop-filter: blur(12px);
+  transition: box-shadow 0.3s ease, border-bottom 0.3s ease;
+  will-change: box-shadow;
 }
 
 .header.scrolled {
-  background: rgba(10, 10, 10, 0.95);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
