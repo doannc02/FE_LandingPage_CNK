@@ -1,15 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, lazy } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import About from "./components/About";
-import News from "./components/News";
-import Courses from "./components/Courses";
-import Gallery from "./components/Gallery";
-import Contact from "./components/Contact";
-import Footer from "./components/Footer";
-import PopupRegistration from "./components/PopupRegistration";
+
+// Lazy load components
+const About = lazy(() => import("./components/About"));
+const Benefits = lazy(() => import("./components/Benefets"));
+const News = lazy(() => import("./components/News"));
+const Courses = lazy(() => import("./components/Courses"));
+const Testimonials = lazy(() => import("./components/Testimonials"));
+const Gallery = lazy(() => import("./components/Gallery"));
+const Contact = lazy(() => import("./components/Contact"));
+const Footer = lazy(() => import("./components/Footer"));
+const PopupRegistration = lazy(() => import("./components/PopupRegistration"));
+const SocialRegistration = lazy(
+  () => import("./components/Socialregistration")
+);
+
+// Loading component for Suspense fallback
+const SectionLoader = () => (
+  <div
+    style={{
+      minHeight: "400px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "transparent",
+    }}
+  >
+    <div
+      style={{
+        width: "40px",
+        height: "40px",
+        border: "3px solid #f3f4f6",
+        borderTopColor: "#f87614",
+        borderRadius: "50%",
+        animation: "spin 0.8s linear infinite",
+      }}
+    ></div>
+  </div>
+);
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
@@ -51,16 +82,54 @@ export default function HomePage() {
 
   return (
     <main className="relative">
-      <PopupRegistration />
+      <Suspense fallback={null}>
+        <PopupRegistration />
+      </Suspense>
 
       <Header />
       <Hero />
-      <About />
-      <News />
-      <Courses />
-      <Gallery />
-      <Contact />
-      <Footer />
+
+      <Suspense fallback={<SectionLoader />}>
+        <About />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <Benefits />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <News />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <Courses />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <Testimonials />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <SocialRegistration />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <Gallery />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <Contact />
+      </Suspense>
+
+      <Suspense fallback={<SectionLoader />}>
+        <Footer />
+      </Suspense>
+
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </main>
   );
 }

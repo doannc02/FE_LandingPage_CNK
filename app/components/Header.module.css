@@ -1,4 +1,4 @@
-/* Header.module.css - Optimized Version */
+/* Header.module.css - Performance Optimized */
 
 .header {
   position: fixed;
@@ -6,10 +6,13 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(10, 10, 10, 0.95); /* Thêm nền đen ngay từ đầu */
+  background: rgba(10, 10, 10, 0.95);
   backdrop-filter: blur(12px);
-  transition: box-shadow 0.3s ease, border-bottom 0.3s ease;
+  -webkit-backdrop-filter: blur(12px);
+  transition: box-shadow 0.2s ease, border-bottom 0.2s ease;
   will-change: box-shadow;
+  transform: translateZ(0); /* Force hardware acceleration */
+  -webkit-transform: translateZ(0);
 }
 
 .header.scrolled {
@@ -38,6 +41,8 @@
   cursor: pointer;
   flex-shrink: 0;
   z-index: 1001;
+  transform: translateZ(0); /* Hardware acceleration */
+  -webkit-transform: translateZ(0);
 }
 
 .logoImage {
@@ -45,7 +50,9 @@
   height: 45px;
   border-radius: 8px;
   object-fit: cover;
-  border: 2px solid var(--color-secondary, #D4AF37);
+  border: 2px solid var(--color-secondary, #d4af37);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .logoText {
@@ -57,7 +64,7 @@
 .logoText h1 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--color-light, #FFFFFF);
+  color: var(--color-light, #ffffff);
   margin: 0;
   line-height: 1.2;
   letter-spacing: 0.02em;
@@ -66,7 +73,7 @@
 
 .logoText p {
   font-size: 0.75rem;
-  color: var(--color-secondary, #D4AF37);
+  color: var(--color-secondary, #d4af37);
   margin: 0;
   line-height: 1;
   font-weight: 500;
@@ -85,29 +92,39 @@
 
 .navLink {
   position: relative;
-  color: var(--color-gray-light, #B0B0B0);
+  color: var(--color-gray-light, #b0b0b0);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.95rem;
   padding: 0.5rem 0.75rem;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
   white-space: nowrap;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .navLink::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-primary, #C41E3A), var(--color-secondary, #D4AF37));
-  transition: width 0.3s ease, left 0.3s ease;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary, #c41e3a),
+    var(--color-secondary, #d4af37)
+  );
+  transition: width 0.2s ease, left 0.2s ease;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .navLink:hover,
 .navLink.active {
-  color: var(--color-light, #FFFFFF);
+  color: var(--color-light, #ffffff);
 }
 
 .navLink:hover::after,
@@ -122,21 +139,29 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, var(--color-primary, #C41E3A), var(--color-secondary, #D4AF37));
-  color: var(--color-dark, #0A0A0A);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #c41e3a),
+    var(--color-secondary, #d4af37)
+  );
+  color: var(--color-dark, #0a0a0a);
   font-weight: 600;
   font-size: 0.9rem;
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
   flex-shrink: 0;
   white-space: nowrap;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
 }
 
 .ctaButton:hover {
-  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(196, 30, 58, 0.4);
 }
 
@@ -156,9 +181,11 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   padding: 0;
   z-index: 1001;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .mobileMenuToggle:hover {
@@ -170,20 +197,24 @@
   position: relative;
   width: 24px;
   height: 2px;
-  background: var(--color-light, #FFFFFF);
-  transition: all 0.3s ease;
+  background: var(--color-light, #ffffff);
+  transition: all 0.2s ease;
   border-radius: 2px;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .hamburger::before,
 .hamburger::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 24px;
   height: 2px;
-  background: var(--color-light, #FFFFFF);
-  transition: all 0.3s ease;
+  background: var(--color-light, #ffffff);
+  transition: all 0.2s ease;
   border-radius: 2px;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .hamburger::before {
@@ -200,12 +231,14 @@
 
 .hamburgerOpen::before {
   top: 0;
-  transform: rotate(45deg);
+  transform: rotate(45deg) translateZ(0);
+  -webkit-transform: rotate(45deg) translateZ(0);
 }
 
 .hamburgerOpen::after {
   bottom: 0;
-  transform: rotate(-45deg);
+  transform: rotate(-45deg) translateZ(0);
+  -webkit-transform: rotate(-45deg) translateZ(0);
 }
 
 /* Responsive Design */
@@ -252,6 +285,7 @@
     bottom: 0;
     background: rgba(10, 10, 10, 0.98);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -259,8 +293,10 @@
     padding: 2rem;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
     z-index: 1000;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
   .nav.navOpen {
@@ -319,7 +355,25 @@
   }
 }
 
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .navLink,
+  .navLink::after,
+  .ctaButton,
+  .mobileMenuToggle,
+  .hamburger,
+  .hamburger::before,
+  .hamburger::after,
+  .nav {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
 /* Prevent body scroll when mobile menu is open */
 body.menuOpen {
   overflow: hidden;
+  position: fixed;
+  width: 100%;
 }

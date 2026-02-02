@@ -1,0 +1,424 @@
+/* Benefits.module.css - 2 Column Layout Style */
+
+/* ==================== BENEFITS SECTION ==================== */
+.benefitsSection {
+  padding: 5rem 0;
+  background: #f8f9fa;
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1600px;
+    padding: 0 4rem;
+  }
+}
+
+/* ==================== SECTION HEADER ==================== */
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sectionTitle {
+  font-family: "Crimson Pro", serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #1a1a2e;
+  margin-bottom: 0;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 1024px) {
+  .sectionTitle {
+    font-size: 3rem;
+  }
+}
+
+.highlight {
+  color: #1a1a2e;
+  display: inline;
+  font-weight: 900;
+}
+
+/* ==================== BENEFITS GRID ==================== */
+.benefitsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.5rem 3rem;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 768px) {
+  .benefitsGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* ==================== BENEFIT CARD ==================== */
+.benefitCard {
+  background: linear-gradient(
+    to right,
+    rgba(248, 118, 20, 0.08) 0%,
+    rgba(248, 118, 20, 0.04) 50%,
+    rgba(248, 118, 20, 0.01) 100%
+  );
+  padding: 2rem 2.5rem;
+  border-radius: 1rem;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(248, 118, 20, 0.1);
+
+  /* Initial state for animation */
+  opacity: 0;
+  transform: translateX(-50px);
+}
+
+/* Visible state with animation */
+.benefitCardVisible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Hover effect */
+.benefitCard:hover {
+  background: linear-gradient(
+    to right,
+    rgba(248, 118, 20, 0.12) 0%,
+    rgba(248, 118, 20, 0.06) 50%,
+    rgba(248, 118, 20, 0.02) 100%
+  );
+  transform: translateX(5px);
+  border-color: rgba(248, 118, 20, 0.2);
+  box-shadow: 0 4px 20px rgba(248, 118, 20, 0.1);
+}
+
+/* ==================== BENEFIT CONTENT ==================== */
+.benefitContent {
+  position: relative;
+  z-index: 2;
+}
+
+.benefitTitle {
+  font-family: "DM Sans", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 1024px) {
+  .benefitTitle {
+    font-size: 1.375rem;
+  }
+}
+
+.benefitHighlight {
+  color: #f87614;
+  display: inline;
+  font-weight: 700;
+}
+
+.benefitDescription {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9375rem;
+  color: #64748b;
+  line-height: 1.7;
+  margin: 0;
+}
+
+@media (min-width: 1024px) {
+  .benefitDescription {
+    font-size: 1rem;
+  }
+}
+
+/* ==================== CTA SECTION ==================== */
+.ctaSection {
+  text-align: center;
+  padding-top: 2.5rem;
+  margin-top: 1rem;
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f87614;
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(248, 118, 20, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.ctaButton:hover::before {
+  left: 100%;
+}
+
+.ctaButton:hover {
+  background: #e66a0f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(248, 118, 20, 0.3);
+  gap: 1rem;
+}
+
+.ctaButton svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 3;
+  transition: transform 0.3s ease;
+}
+
+.ctaButton:hover svg {
+  transform: translateX(5px);
+}
+
+/* ==================== BACKGROUND DECORATIONS ==================== */
+.bgDecoration1,
+.bgDecoration2 {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(248, 118, 20, 0.03);
+  pointer-events: none;
+  animation: float 20s infinite ease-in-out;
+}
+
+.bgDecoration1 {
+  width: 500px;
+  height: 500px;
+  top: -100px;
+  left: -150px;
+  animation-delay: 0s;
+}
+
+.bgDecoration2 {
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  right: -100px;
+  animation-delay: 5s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+  50% {
+    transform: translateY(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(20px) rotate(-5deg);
+  }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+  .benefitsSection {
+    padding: 4rem 0;
+  }
+
+  .container {
+    padding: 0 2.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 2.25rem;
+  }
+
+  .benefitsGrid {
+    gap: 2rem 2.5rem;
+  }
+
+  .benefitTitle {
+    font-size: 1.25rem;
+  }
+
+  .benefitDescription {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .benefitsSection {
+    padding: 3rem 0;
+  }
+
+  .container {
+    padding: 0 1.5rem;
+  }
+
+  .sectionHeader {
+    margin-bottom: 2.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.875rem;
+  }
+
+  .benefitsGrid {
+    gap: 1.75rem;
+  }
+
+  .benefitCard {
+    padding: 1.5rem 1.75rem;
+  }
+
+  .benefitTitle {
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .benefitDescription {
+    font-size: 0.875rem;
+  }
+
+  .ctaButton {
+    padding: 0.875rem 2rem;
+    font-size: 0.9375rem;
+  }
+
+  .bgDecoration1 {
+    width: 300px;
+    height: 300px;
+    left: -100px;
+  }
+
+  .bgDecoration2 {
+    width: 250px;
+    height: 250px;
+    right: -80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionTitle {
+    font-size: 1.625rem;
+  }
+
+  .benefitCard {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .benefitTitle {
+    font-size: 1.0625rem;
+  }
+
+  .benefitDescription {
+    font-size: 0.8125rem;
+  }
+
+  .ctaButton {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* ==================== ACCESSIBILITY ==================== */
+.ctaButton:focus-visible {
+  outline: 3px solid #f87614;
+  outline-offset: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .benefitCard,
+  .ctaButton {
+    transition-duration: 0.01ms !important;
+  }
+
+  .sectionHeader,
+  .ctaSection {
+    animation: none !important;
+  }
+
+  .bgDecoration1,
+  .bgDecoration2 {
+    animation: none !important;
+  }
+
+  .benefitCard {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+  .benefitsSection {
+    background: white;
+  }
+
+  .bgDecoration1,
+  .bgDecoration2 {
+    display: none;
+  }
+
+  .benefitCard {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
