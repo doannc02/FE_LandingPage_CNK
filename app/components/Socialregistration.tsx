@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import styles from "./SocialRegistration.module.css";
+import styles from "./Socialregistration.module.css";
 
 interface ContactChannel {
   id: string;
