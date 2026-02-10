@@ -1,0 +1,59 @@
+/* AdminDashboard.module.css - ADD THESE STYLES */
+
+/* Google Sheets Sync Button */
+.syncSheetsButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 800;
+    font-size: 0.95rem;
+    background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+    white-space: nowrap;
+  }
+  
+  .syncSheetsButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    background: linear-gradient(135deg, #5a95f5 0%, #4caf50 100%);
+  }
+  
+  .syncSheetsButton:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  .syncSheetsButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .syncSheetsButton .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .syncSheetsButton {
+      padding: 0.65rem 1.25rem;
+      font-size: 0.875rem;
+    }
+  }

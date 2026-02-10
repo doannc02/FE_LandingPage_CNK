@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import styles from "./Contact.module.css";
 import { useSubmitContact } from "../lib/hooks/useContact";
+import { useSyncToSheets } from "../lib/hooks/useGoogleSheets"; // ← THÊM
 
 /* =======================
    ANIMATION VARIANTS
@@ -48,6 +49,7 @@ export default function Contact() {
   });
 
   const submitMutation = useSubmitContact();
+  const syncMutation = useSyncToSheets(); // ← THÊM
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -59,8 +61,39 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
-      await submitMutation.mutateAsync(formData);
+      // BƯỚC 1: Submit vào backend database
+      console.log("📝 Submitting to backend...");
+      const result = await submitMutation.mutateAsync(formData);
+
+      // BƯỚC 2: AUTO-SYNC lên Google Sheets ngay lập tức
+      console.log("📊 Auto-syncing to Google Sheets...");
+      const now = new Date().toISOString();
+
+      // Không cần await để không block UX
+      syncMutation.mutate({
+        data: [
+          {
+            full_name: formData.fullName,
+            age: formData.age,
+            phone: formData.phone,
+            email: formData.email || "",
+            purpose: formData.purpose,
+            training_type: formData.trainingType,
+            location: formData.location,
+            message: formData.message || "",
+            status: "pending",
+            notes: "",
+            created_at: (result as any)?.data?.createdAt || now,
+            updated_at: now,
+          },
+        ],
+        type: "contact",
+        //mode: "append",
+      });
+
+      // BƯỚC 3: Reset form
       setFormData({
         fullName: "",
         age: "",
@@ -71,8 +104,11 @@ export default function Contact() {
         location: "",
         message: "",
       });
+
+      // BƯỚC 4: Thông báo thành công
       alert("🎉 Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.");
-    } catch {
+    } catch (error) {
+      console.error("❌ Submit error:", error);
       alert("❌ Có lỗi xảy ra, vui lòng thử lại!");
     }
   };
@@ -89,7 +125,7 @@ export default function Contact() {
     },
     {
       id: "kien-hung",
-      name: "Cơ sở 2: Vườn hoa Hàng Bè - Kiến Hưng",
+      name: "Cơ sở 2: Vườn hoa Hằng Bè - Kiến Hưng",
       schedule: "Thứ 3-5-7 | 17:45-19:00",
       fee: "MIỄN PHÍ",
       isFree: true,
@@ -243,7 +279,7 @@ export default function Contact() {
             whileInView="show"
             viewport={{ once: false, margin: "-120px" }}
           >
-            {/* 1 */}
+            {/* Form fields... */}
             <motion.div
               className={styles.formGroup}
               variants={formItemVariants}
@@ -259,7 +295,6 @@ export default function Contact() {
               />
             </motion.div>
 
-            {/* 2 */}
             <div className={styles.formRow}>
               <motion.div
                 className={styles.formGroup}
@@ -296,7 +331,6 @@ export default function Contact() {
               </motion.div>
             </div>
 
-            {/* 3 */}
             <motion.div
               className={styles.formGroup}
               variants={formItemVariants}
@@ -312,7 +346,6 @@ export default function Contact() {
               />
             </motion.div>
 
-            {/* 4 */}
             <motion.div
               className={styles.formGroup}
               variants={formItemVariants}
@@ -328,7 +361,6 @@ export default function Contact() {
               />
             </motion.div>
 
-            {/* 5 */}
             <div className={styles.formRow}>
               <motion.div
                 className={styles.formGroup}
@@ -370,7 +402,6 @@ export default function Contact() {
               </motion.div>
             </div>
 
-            {/* 6 */}
             <motion.div
               className={styles.formGroup}
               variants={formItemVariants}
