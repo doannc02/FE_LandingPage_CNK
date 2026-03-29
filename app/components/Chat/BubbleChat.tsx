@@ -786,7 +786,7 @@ export default function BubbleChat() {
           { message: content, history: historySnapshot } satisfies ChatRequest,
           (evt) => {
             const full: string =
-              (evt.currentTarget as XMLHttpRequest).responseText ?? "";
+              (evt.event as XMLHttpRequest).responseText ?? "";
             const newChunk = full.slice(prevLen);
             prevLen = full.length;
             const text = parseChunk(newChunk);
