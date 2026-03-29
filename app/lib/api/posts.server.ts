@@ -3,7 +3,7 @@ import { PostDetailDto, RelatedPostDto } from "./posts";
 import https from "https";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://dangcapnc.io.vn/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://localhost:52040";
 
 // ✅ Tạo agent để bypass SSL verification (chỉ dùng cho dev)
 const httpsAgent = new https.Agent({
@@ -15,7 +15,7 @@ const httpsAgent = new https.Agent({
  */
 
 export async function getPostBySlugServer(
-  slug: string
+  slug: string,
 ): Promise<PostDetailDto | null> {
   try {
     const url = `${API_BASE_URL}/posts/slug/${slug}`;
@@ -36,7 +36,7 @@ export async function getPostBySlugServer(
 
     if (!response.ok) {
       console.error(
-        `❌ Failed to fetch post: ${response.status} ${response.statusText}`
+        `❌ Failed to fetch post: ${response.status} ${response.statusText}`,
       );
       const errorText = await response.text();
       console.error("Error body:", errorText);
@@ -46,7 +46,7 @@ export async function getPostBySlugServer(
     const result = await response.json();
     console.log(
       "✅ Response received:",
-      result.success || result.isSuccess ? "Success" : "Failed"
+      result.success || result.isSuccess ? "Success" : "Failed",
     );
 
     if ((result.success || result.isSuccess) && result.data) {
@@ -63,7 +63,7 @@ export async function getPostBySlugServer(
 
 export async function getRelatedPostsServer(
   slug: string,
-  limit: number = 5
+  limit: number = 5,
 ): Promise<RelatedPostDto[]> {
   try {
     const url = `${API_BASE_URL}/posts/${slug}/related?limit=${limit}`;

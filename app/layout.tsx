@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./styles/globals.css";
 import { QueryProvider } from "./providers/QueryProvider";
+import BubbleChat from "./components/Chat/BubbleChat";
 
 export const metadata: Metadata = {
   title: {
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
   creator: "CLB Côn Nhị Khúc Hà Đông",
   publisher: "CLB Côn Nhị Khúc Hà Đông",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://www.dangcapnc.io.vn"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:52040",
   ),
   alternates: {
     canonical: "https://www.dangcapnc.io.vn/",
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
       "Nơi rèn luyện tinh thần chiến binh, khơi nguồn sức mạnh nội tại. Đào tạo côn nhị khúc chuyên nghiệp từ cơ bản đến nâng cao tại Hà Đông, Hà Nội.",
     type: "website",
     locale: "vi_VN",
-    url: "https://www.dangcapnc.io.vn",
+    url: "https://localhost:52040",
     siteName: "CLB Côn Nhị Khúc Hà Đông",
     images: [
       {
@@ -89,8 +90,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://www.dangcapnc.io.vn";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:52040";
 
   // Enhanced JSON-LD structured data
   const organizationSchema = {
@@ -175,6 +175,7 @@ export default function RootLayout({
       </head>
       <body>
         <QueryProvider>{children}</QueryProvider>
+        <BubbleChat />
       </body>
     </html>
   );

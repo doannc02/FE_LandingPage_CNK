@@ -1,3 +1,18 @@
+/* ── Tailwind CSS v4 ──────────────────────────────────────────
+   @import phải đứng đầu file. Các khai báo CSS phía sau sẽ
+   override Tailwind preflight nên không cần tắt preflight. */
+@import "tailwindcss";
+
+/* Định nghĩa custom tokens — dùng cho class bg-brand, text-brand, v.v. */
+@theme {
+  --color-brand:       #dc2626;
+  --color-brand-light: #ef4444;
+  --color-brand-dark:  #991b1b;
+}
+
+/* Dark mode dùng prefers-color-scheme (không cần class .dark) */
+@variant dark (@media (prefers-color-scheme: dark));
+
 /* ================================================
    MODERN DESIGN SYSTEM - CLB CÔN NHỊ KHÚC HÀ ĐÔNG
    Inspired by KTDC Group - Clean, Professional Design
