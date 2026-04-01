@@ -56,6 +56,18 @@ function formatTime(date: Date): string {
   });
 }
 
+function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return isMobile;
+}
+
 interface GroupedMessage extends Message {
   isFirstInGroup: boolean;
   isLastInGroup: boolean;
@@ -198,7 +210,7 @@ const MessageBubble = memo(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// StatusBanner — hiện khi HumanOnline hoặc LeftMessage
+// StatusBanner
 // ─────────────────────────────────────────────────────────────────────────────
 
 const StatusBanner = memo(function StatusBanner({
@@ -244,24 +256,23 @@ function MessageList({
   isLoading: boolean;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-
   const grouped = useMemo(() => groupMessages(messages), [messages]);
 
+  // Always scroll to bottom when messages change or loading state changes.
+  // Using "instant" on send (loading=true) and "smooth" on receive.
   useLayoutEffect(() => {
-    const el = listRef.current;
-    if (!el) return;
-    if (el.scrollHeight - el.scrollTop - el.clientHeight < 150) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
+    bottomRef.current?.scrollIntoView({
+      behavior: isLoading ? "instant" : "smooth",
+    });
   }, [messages, isLoading]);
+
+  const scrollbarClasses =
+    // Override the 12px scrollbar from globals.css with !important
+    "[&::-webkit-scrollbar]:![width:4px] [&::-webkit-scrollbar-thumb]:!rounded-full [&::-webkit-scrollbar-thumb]:!bg-gray-300 [&::-webkit-scrollbar-track]:!bg-transparent";
 
   if (messages.length === 0 && !isLoading) {
     return (
-      <div
-        ref={listRef}
-        className="flex-1 overflow-y-auto bg-[#F9FAFB] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300"
-      >
+      <div className={`flex-1 overflow-y-auto bg-[#F9FAFB] ${scrollbarClasses}`}>
         <div className="h-full flex flex-col items-center justify-center text-center px-6 py-8 space-y-4">
           <div className="relative">
             <div
@@ -295,8 +306,7 @@ function MessageList({
 
   return (
     <div
-      ref={listRef}
-      className="flex-1 overflow-y-auto bg-[#F9FAFB] px-4 py-4 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent"
+      className={`flex-1 overflow-y-auto bg-[#F9FAFB] px-4 py-4 ${scrollbarClasses}`}
       role="log"
       aria-live="polite"
       aria-label="Lịch sử trò chuyện"
@@ -443,10 +453,12 @@ const MessageInput = memo(function MessageInput({
 const ChatHeader = memo(function ChatHeader({
   isLoading,
   chatMode,
+  isMobile,
   onClose,
 }: {
   isLoading: boolean;
   chatMode: ChatResponseType | null;
+  isMobile: boolean;
   onClose: () => void;
 }) {
   let subtitle = "Thường phản hồi ngay";
@@ -456,7 +468,7 @@ const ChatHeader = memo(function ChatHeader({
 
   return (
     <div
-      className="flex-shrink-0 flex items-center gap-3 !px-4 !py-3.5 rounded-t-2xl"
+      className={`flex-shrink-0 flex items-center gap-3 !px-4 !py-3.5 ${isMobile ? "" : "rounded-t-2xl"}`}
       style={{ background: HEADER_GRADIENT }}
     >
       <div className="relative flex-none">
@@ -503,16 +515,17 @@ const ChatWindow = memo(function ChatWindow({
   messages,
   isLoading,
   chatMode,
+  isMobile,
   onSend,
   onClose,
 }: {
   messages: Message[];
   isLoading: boolean;
   chatMode: ChatResponseType | null;
+  isMobile: boolean;
   onSend: (text: string) => void;
   onClose: () => void;
 }) {
-  // Show suggests when idle (no messages) OR after last bot/system message and not loading
   const lastMsg = messages[messages.length - 1];
   const showSuggests =
     !isLoading &&
@@ -522,27 +535,63 @@ const ChatWindow = memo(function ChatWindow({
       lastMsg?.role === "assistant" ||
       lastMsg?.role === "system");
 
+  // Desktop: popup từ góc dưới phải
+  // Mobile: full-screen slide lên từ dưới
+  const desktopClass =
+    "fixed bottom-[90px] right-6 z-[9998] w-[360px] h-[560px] flex flex-col rounded-2xl overflow-clip shadow-2xl border border-gray-100 bg-white";
+  const mobileClass =
+    "fixed inset-0 z-[9998] flex flex-col bg-white";
+
+  const desktopVariants = {
+    initial: { opacity: 0, scale: 0.9, y: 20 },
+    animate: { opacity: 1, scale: 1, y: 0 },
+    exit: { opacity: 0, scale: 0.9, y: 20 },
+  };
+  const mobileVariants = {
+    initial: { y: "100%" },
+    animate: { y: 0 },
+    exit: { y: "100%" },
+  };
+
+  const variants = isMobile ? mobileVariants : desktopVariants;
+  const transition = isMobile
+    ? { duration: 0.3, ease: [0.32, 0.72, 0, 1] }
+    : { duration: 0.22, ease: [0.16, 1, 0.3, 1] };
+
   return (
     <motion.div
       role="dialog"
       aria-modal="true"
       aria-label="Cửa sổ hỗ trợ AI"
-      className="fixed bottom-[90px] right-6 z-[9998] w-[360px] h-[560px] flex flex-col rounded-2xl overflow-clip shadow-2xl border border-gray-100 bg-white [&_p]:m-0 [&_p]:text-inherit [&_a]:text-inherit [&_a]:no-underline"
-      initial={{ opacity: 0, scale: 0.9, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: 20 }}
-      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+      className={`${isMobile ? mobileClass : desktopClass} [&_p]:m-0 [&_p]:text-inherit [&_a]:text-inherit [&_a]:no-underline`}
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={transition}
     >
-      <ChatHeader isLoading={isLoading} chatMode={chatMode} onClose={onClose} />
+      <ChatHeader
+        isLoading={isLoading}
+        chatMode={chatMode}
+        isMobile={isMobile}
+        onClose={onClose}
+      />
       <MessageList messages={messages} isLoading={isLoading} />
 
       <StatusBanner chatMode={chatMode} />
 
       {/* Footer */}
-      <div className="flex-shrink-0 px-4 pt-2 pb-4 bg-white border-t border-gray-100">
+      <div
+        className="flex-shrink-0 px-4 pt-2 pb-4 bg-white border-t border-gray-100"
+        style={{
+          // Tránh bàn phím ảo che input trên iOS Safari
+          paddingBottom: isMobile
+            ? "max(1rem, env(safe-area-inset-bottom))"
+            : undefined,
+        }}
+      >
         <StarterQuestions onSelect={onSend} visible={showSuggests} />
 
-        {/* Input pill */}
         <div className="relative flex items-center gap-2.5 bg-gray-100 rounded-2xl min-h-[46px] focus-within:ring-1 focus-within:ring-red-200 transition-all duration-150 !mx-1 !px-4 !py-2.5">
           <MessageInput onSend={onSend} isLoading={isLoading} />
         </div>
@@ -609,10 +658,12 @@ const GreetingTooltip = memo(function GreetingTooltip({
 const TriggerButton = memo(function TriggerButton({
   isOpen,
   hasUnread,
+  isMobile,
   onClick,
 }: {
   isOpen: boolean;
   hasUnread: boolean;
+  isMobile: boolean;
   onClick: () => void;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -635,6 +686,9 @@ const TriggerButton = memo(function TriggerButton({
     setShowTooltip(false);
   }, [onClick]);
   const handleDismiss = useCallback(() => setShowTooltip(false), []);
+
+  // Trên mobile khi chat đang mở, ẩn trigger (đã có nút X trong header)
+  if (isMobile && isOpen) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">
@@ -717,8 +771,18 @@ export default function BubbleChat() {
   const [chatRoomId, setChatRoomId] = useState<string | null>(null);
   const [sessionId] = useState(getOrCreateSessionId);
 
+  const isMobile = useIsMobile();
   const messagesRef = useRef<Message[]>([]);
   messagesRef.current = messages;
+
+  // Lock body scroll khi mobile chat mở
+  useEffect(() => {
+    if (!isMobile) return;
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, isMobile]);
 
   // Firebase subscriptions
   const { messages: firebaseMessages } = useChatRoom(
@@ -731,7 +795,6 @@ export default function BubbleChat() {
   // Sync Firebase messages into local messages when in HumanOnline mode
   useEffect(() => {
     if (chatMode !== "HumanOnline" || firebaseMessages.length === 0) return;
-    // Only add messages that aren't already in the list
     const existingKeys = new Set(messagesRef.current.map((m) => m.id));
     const newMsgs = firebaseMessages
       .filter((fm) => !existingKeys.has(fm.key))
@@ -865,6 +928,7 @@ export default function BubbleChat() {
             messages={messages}
             isLoading={isLoading}
             chatMode={chatMode}
+            isMobile={isMobile}
             onSend={handleSend}
             onClose={handleToggle}
           />
@@ -874,6 +938,7 @@ export default function BubbleChat() {
       <TriggerButton
         isOpen={isOpen}
         hasUnread={hasUnread}
+        isMobile={isMobile}
         onClick={handleToggle}
       />
     </>
