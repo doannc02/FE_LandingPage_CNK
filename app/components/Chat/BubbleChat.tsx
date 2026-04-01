@@ -547,7 +547,7 @@ const ChatWindow = memo(function ChatWindow({
           <MessageInput onSend={onSend} isLoading={isLoading} />
         </div>
 
-        <p className="text-[10px] text-gray-400 text-center mt-2 select-none leading-none">
+        <p className="text-[10px] text-gray-400 text-center !mt-1.5 select-none leading-none">
           Phản hồi có thể mất vài giây để xử lý
         </p>
       </div>
@@ -792,7 +792,7 @@ export default function BubbleChat() {
       try {
         const res = await chatApi.sendMessage({
           sessionId,
-          userMessage: content,
+          message: content,
           history,
         });
 

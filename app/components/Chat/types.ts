@@ -20,9 +20,8 @@ export interface ChatHistoryItem {
 
 export interface ChatMessageRequest {
   sessionId: string;
-  userMessage: string;
+  message: string;
   history: ChatHistoryItem[];
-  userId?: string | null;
 }
 
 export type ChatResponseType = "AI" | "HumanOnline" | "LeftMessage";
@@ -31,7 +30,7 @@ export interface ChatMessageResponse {
   type: ChatResponseType;
   answer?: string | null;
   chatRoomId?: string | null;
-  pendingMessageId?: string | null;
+  messageId?: string | null;
 }
 
 /** Legacy — streaming proxy (app/api/chat/route.ts) */
