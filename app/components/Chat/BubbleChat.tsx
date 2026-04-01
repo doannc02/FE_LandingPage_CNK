@@ -346,12 +346,12 @@ const StarterQuestions = memo(function StarterQuestions({
   if (!visible) return null;
 
   return (
-    <div className="flex flex-wrap gap-2 mb-3">
+    <div className="flex flex-wrap gap-2 !mb-3">
       {STARTERS.map(({ label, query }) => (
         <button
           key={query}
           onClick={() => onSelect(query)}
-          className="rounded-full border border-red-200 bg-white text-red-800 text-[12px] font-medium px-3 py-1.5 shadow-sm hover:bg-red-50 active:scale-95 transition-all duration-150 cursor-pointer whitespace-nowrap select-none"
+          className="rounded-full border border-red-200 bg-white text-red-800 text-[12px] font-medium !px-3 !py-1.5 shadow-sm hover:bg-red-50 active:scale-95 transition-all duration-150 cursor-pointer whitespace-nowrap select-none"
         >
           {label}
         </button>
