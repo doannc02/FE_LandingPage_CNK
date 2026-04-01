@@ -167,7 +167,7 @@ const MessageBubble = memo(
           }`}
         >
           <div
-            className={`text-[13.5px] leading-relaxed break-words [overflow-wrap:anywhere] shadow-sm ${
+            className={`text-[13.5px] leading-relaxed break-words [overflow-wrap:anywhere] !whitespace-pre-wrap shadow-sm ${
               isUser
                 ? "rounded-[20px] rounded-br-[4px] text-white"
                 : "rounded-[20px] rounded-bl-[4px] bg-white text-gray-800 border border-gray-100"
