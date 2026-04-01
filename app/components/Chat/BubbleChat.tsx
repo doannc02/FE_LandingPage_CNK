@@ -751,86 +751,100 @@ export default function BubbleChat() {
   }, []);
 
   const handleSend = useCallback(
-    async (content: string) => {
-      if (isStreaming) return;
+  async (content: string) => {
+    if (isStreaming) return;
 
-      const userMsg: Message = {
-        id: genId(),
-        role: "user",
-        content,
-        timestamp: new Date(),
-      };
-      const assistantMsg: Message = {
-        id: genId(),
-        role: "assistant",
-        content: "",
-        isStreaming: true,
-        timestamp: new Date(),
-      };
+    const userMsg: Message = {
+      id: genId(),
+      role: "user",
+      content,
+      timestamp: new Date(),
+    };
+    const assistantMsg: Message = {
+      id: genId(),
+      role: "assistant",
+      content: "",
+      isStreaming: true,
+      timestamp: new Date(),
+    };
 
-      const historySnapshot = messagesRef.current.map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
+    const historySnapshot = messagesRef.current.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
 
-      setMessages((prev) => [...prev, userMsg, assistantMsg]);
-      setIsStreaming(true);
+    setMessages((prev) => [...prev, userMsg, assistantMsg]);
+    setIsStreaming(true);
 
-      const controller = new AbortController();
-      abortRef.current = controller;
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-      let prevLen = 0;
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: content, history: historySnapshot }),
+        signal: controller.signal,
+      });
 
-      try {
-        await chatApi.streamMessage(
-          { message: content, history: historySnapshot } satisfies ChatRequest,
-          (evt) => {
-            const full: string =
-              (evt.event as XMLHttpRequest).responseText ?? "";
-            const newChunk = full.slice(prevLen);
-            prevLen = full.length;
-            const text = parseChunk(newChunk);
-            if (text) {
-              setMessages((prev) =>
-                prev.map((m, i) =>
-                  i === prev.length - 1
-                    ? { ...m, content: m.content + text }
-                    : m,
-                ),
-              );
-            }
-          },
-          controller.signal,
-        );
-      } catch (err) {
-        if (isAxiosError(err) && err.code === "ERR_CANCELED") return;
-        const msg = isAxiosError(err)
-          ? (err.response?.data?.error ?? err.message)
-          : (err as Error).message;
-        console.error("[BubbleChat] Axios error:", msg);
-        setMessages((prev) =>
-          prev.map((m, i) =>
-            i === prev.length - 1
-              ? {
-                  ...m,
-                  content:
-                    "Xin lỗi, đã xảy ra lỗi kết nối. Vui lòng thử lại sau hoặc gọi hotline để được hỗ trợ.",
-                }
-              : m,
-          ),
-        );
-      } finally {
-        setMessages((prev) =>
-          prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, isStreaming: false } : m,
-          ),
-        );
-        setIsStreaming(false);
-        abortRef.current = null;
+      if (!res.ok || !res.body) {
+        throw new Error(`HTTP ${res.status}`);
       }
-    },
-    [isStreaming],
-  );
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        // Tách từng SSE event (kết thúc bằng \n\n)
+        const parts = buffer.split("\n\n");
+        buffer = parts.pop() ?? ""; // phần chưa hoàn chỉnh giữ lại
+
+        for (const part of parts) {
+          const text = parseChunk(part);
+          if (text) {
+            setMessages((prev) =>
+              prev.map((m, i) =>
+                i === prev.length - 1
+                  ? { ...m, content: m.content + text }
+                  : m,
+              ),
+            );
+          }
+        }
+      }
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      console.error("[BubbleChat] Stream error:", err);
+      setMessages((prev) =>
+        prev.map((m, i) =>
+          i === prev.length - 1
+            ? {
+                ...m,
+                content:
+                  "Xin lỗi, đã xảy ra lỗi kết nối. Vui lòng thử lại sau hoặc gọi hotline để được hỗ trợ.",
+              }
+            : m,
+        ),
+      );
+    } finally {
+      setMessages((prev) =>
+        prev.map((m, i) =>
+          i === prev.length - 1 ? { ...m, isStreaming: false } : m,
+        ),
+      );
+      setIsStreaming(false);
+      abortRef.current = null;
+    }
+  },
+  [isStreaming],
+);
+
 
   useEffect(
     () => () => {
