@@ -10,13 +10,15 @@ import {
   memo,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, X, Send, MessageCircle, Square } from "lucide-react";
+import { Bot, X, Send, MessageCircle, UserCheck, Clock } from "lucide-react";
 import { isAxiosError } from "axios";
-import type { Message, ChatRequest } from "./types";
+import type { Message, ChatHistoryItem, ChatResponseType } from "./types";
 import { chatApi } from "@/app/lib/api/chat";
+import { useChatRoom } from "@/app/hooks/useChatRoom";
+import { useUserNotification } from "@/app/hooks/useUserNotification";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTS — Đồng bộ màu thương hiệu CLB
+// CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BRAND_RED = "#dc2626";
@@ -37,47 +39,21 @@ function genId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+function getOrCreateSessionId(): string {
+  if (typeof window === "undefined") return `sess_${genId()}`;
+  const key = "cnk_chat_session_id";
+  const stored = localStorage.getItem(key);
+  if (stored) return stored;
+  const id = `sess_${genId()}`;
+  localStorage.setItem(key, id);
+  return id;
+}
+
 function formatTime(date: Date): string {
   return date.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-function parseChunk(raw: string): string {
-  let result = "";
-  for (const line of raw.split("\n")) {
-    const t = line.trim();
-    if (
-      !t ||
-      t.startsWith(":") ||
-      t.startsWith("event:") ||
-      t.startsWith("id:") ||
-      t.startsWith("retry:")
-    )
-      continue;
-
-    let jsonStr = t;
-    if (t.startsWith("data: ")) {
-      const d = t.slice(6).trim();
-      if (d === "[DONE]") continue;
-      jsonStr = d;
-    }
-
-    try {
-      const j = JSON.parse(jsonStr);
-      result +=
-        j.content ??
-        j.text ??
-        j.delta?.content ??
-        j.choices?.[0]?.delta?.content ??
-        j.choices?.[0]?.text ??
-        "";
-    } catch {
-      /* non-JSON chunk */
-    }
-  }
-  return result;
 }
 
 interface GroupedMessage extends Message {
@@ -93,26 +69,6 @@ function groupMessages(messages: Message[]): GroupedMessage[] {
       i === messages.length - 1 || messages[i + 1].role !== msg.role,
   }));
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// StreamCursor
-// ─────────────────────────────────────────────────────────────────────────────
-
-const StreamCursor = memo(function StreamCursor() {
-  return (
-    <motion.span
-      aria-hidden
-      className="inline-block w-0.5 h-3.5 bg-orange-500 ml-0.5 align-middle rounded-sm"
-      animate={{ opacity: [1, 0] }}
-      transition={{
-        duration: 0.55,
-        repeat: Infinity,
-        repeatType: "reverse",
-        ease: "linear",
-      }}
-    />
-  );
-});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BotAvatar
@@ -176,7 +132,23 @@ const TypingIndicator = memo(function TypingIndicator() {
 const MessageBubble = memo(
   function MessageBubble({ message }: { message: GroupedMessage }) {
     const isUser = message.role === "user";
+    const isSystem = message.role === "system";
     const { isFirstInGroup, isLastInGroup } = message;
+
+    if (isSystem) {
+      return (
+        <motion.div
+          className="flex justify-center mt-4"
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+        >
+          <div className="bg-amber-50 border border-amber-200 text-amber-800 text-[12px] rounded-xl px-3 py-2 max-w-[85%] text-center leading-relaxed">
+            {message.content}
+          </div>
+        </motion.div>
+      );
+    }
 
     return (
       <motion.div
@@ -187,7 +159,6 @@ const MessageBubble = memo(
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.18, ease: "easeOut" }}
       >
-        {/* Avatar bot — luôn chiếm slot để căn chỉnh đều */}
         {!isUser && <BotAvatar visible={isLastInGroup} />}
 
         <div
@@ -202,14 +173,13 @@ const MessageBubble = memo(
                 : "rounded-[20px] rounded-bl-[4px] bg-white text-gray-800 border border-gray-100"
             }`}
             style={{
-              padding: "10px 14px", // Cách viết chuẩn cho padding (trên-dưới 10px, trái-phải 14px)
+              padding: "10px 14px",
               backgroundColor: isUser ? BRAND_RED : undefined,
             }}
           >
             {message.content || (
               <span className="italic text-xs opacity-60">Đang khởi tạo…</span>
             )}
-            {message.isStreaming && message.content && <StreamCursor />}
           </div>
 
           {isLastInGroup && (
@@ -224,9 +194,43 @@ const MessageBubble = memo(
   (prev, next) =>
     prev.message.id === next.message.id &&
     prev.message.content === next.message.content &&
-    prev.message.isStreaming === next.message.isStreaming &&
     prev.message.isLastInGroup === next.message.isLastInGroup,
 );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// StatusBanner — hiện khi HumanOnline hoặc LeftMessage
+// ─────────────────────────────────────────────────────────────────────────────
+
+const StatusBanner = memo(function StatusBanner({
+  chatMode,
+}: {
+  chatMode: ChatResponseType | null;
+}) {
+  if (!chatMode || chatMode === "AI") return null;
+
+  const isHuman = chatMode === "HumanOnline";
+
+  return (
+    <div
+      className={`flex items-center gap-2 mx-4 mb-2 px-3 py-2 rounded-xl text-[12px] ${
+        isHuman
+          ? "bg-green-50 border border-green-200 text-green-700"
+          : "bg-blue-50 border border-blue-200 text-blue-700"
+      }`}
+    >
+      {isHuman ? (
+        <UserCheck size={13} className="flex-none" />
+      ) : (
+        <Clock size={13} className="flex-none" />
+      )}
+      <span>
+        {isHuman
+          ? "Đã kết nối với admin — nhắn tin bên dưới"
+          : "Đã ghi nhận! Admin sẽ phản hồi sớm nhất có thể."}
+      </span>
+    </div>
+  );
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MessageList
@@ -234,10 +238,10 @@ const MessageBubble = memo(
 
 function MessageList({
   messages,
-  isStreaming,
+  isLoading,
 }: {
   messages: Message[];
-  isStreaming: boolean;
+  isLoading: boolean;
 }) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -250,10 +254,9 @@ function MessageList({
     if (el.scrollHeight - el.scrollTop - el.clientHeight < 150) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, isStreaming]);
+  }, [messages, isLoading]);
 
-  /* ── Empty state ── */
-  if (messages.length === 0 && !isStreaming) {
+  if (messages.length === 0 && !isLoading) {
     return (
       <div
         ref={listRef}
@@ -290,7 +293,6 @@ function MessageList({
     );
   }
 
-  /* ── Message list ── */
   return (
     <div
       ref={listRef}
@@ -299,7 +301,6 @@ function MessageList({
       aria-live="polite"
       aria-label="Lịch sử trò chuyện"
     >
-      {/* Date divider */}
       <div className="flex items-center gap-2 py-2">
         <div className="flex-1 h-px bg-gray-200" />
         <span className="text-[10.5px] text-gray-400 font-medium select-none">
@@ -314,8 +315,7 @@ function MessageList({
         ))}
       </AnimatePresence>
 
-      {/* Typing dots — chỉ khi stream mới bắt đầu chưa có content */}
-      {isStreaming && messages[messages.length - 1]?.content === "" && (
+      {isLoading && (
         <motion.div
           key="typing"
           initial={{ opacity: 0, y: 6 }}
@@ -346,12 +346,12 @@ const StarterQuestions = memo(function StarterQuestions({
   if (!visible) return null;
 
   return (
-    <div className="flex flex-wrap gap-2 mb-3">
+    <div className="flex flex-wrap gap-2 !pt-2 !px-1 !mb-3">
       {STARTERS.map(({ label, query }) => (
         <button
           key={query}
           onClick={() => onSelect(query)}
-          className="rounded-full border border-red-200 bg-white text-red-800 text-[12px] font-medium px-3 py-1.5 shadow-sm hover:bg-red-50 active:scale-95 transition-all duration-150 cursor-pointer whitespace-nowrap select-none"
+          className="rounded-full border border-red-200 bg-white text-red-800 text-[12px] font-medium !px-1.5 !py-1 shadow-sm hover:bg-red-50 active:scale-95 transition-all duration-150 cursor-pointer whitespace-nowrap select-none"
         >
           {label}
         </button>
@@ -366,18 +366,15 @@ const StarterQuestions = memo(function StarterQuestions({
 
 const MessageInput = memo(function MessageInput({
   onSend,
-  onStop,
-  isStreaming,
+  isLoading,
 }: {
   onSend: (text: string) => void;
-  onStop: () => void;
-  isStreaming: boolean;
+  isLoading: boolean;
 }) {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const hasText = value.trim().length > 0;
 
-  // Auto-resize (max ~3 dòng = 78px)
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
@@ -386,16 +383,16 @@ const MessageInput = memo(function MessageInput({
   }, [value]);
 
   useEffect(() => {
-    if (!isStreaming) textareaRef.current?.focus();
-  }, [isStreaming]);
+    if (!isLoading) textareaRef.current?.focus();
+  }, [isLoading]);
 
   const submit = useCallback(() => {
     const trimmed = value.trim();
-    if (!trimmed || isStreaming) return;
+    if (!trimmed || isLoading) return;
     onSend(trimmed);
     setValue("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
-  }, [value, isStreaming, onSend]);
+  }, [value, isLoading, onSend]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -414,46 +411,27 @@ const MessageInput = memo(function MessageInput({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        disabled={isStreaming}
-        placeholder={isStreaming ? "Đang nhận phản hồi…" : "Nhập tin nhắn…"}
+        disabled={isLoading}
+        placeholder={isLoading ? "Đang xử lý…" : "Nhập tin nhắn…"}
         aria-label="Nhập tin nhắn"
         rows={1}
-        className="flex-1 min-w-0 resize-none bg-transparent text-[13.5px] text-gray-800 placeholder-gray-400 outline-none border-none leading-[1.5] min-h-[22px] max-h-[78px] self-center disabled:opacity-60 disabled:cursor-not-allowed"
+        className="flex-1 !min-w-0 resize-none bg-transparent !text-[13.5px] text-gray-800 placeholder-gray-400 outline-none border-none !leading-[1.5] !min-h-[22px] !max-h-[78px] self-center disabled:opacity-60 disabled:cursor-not-allowed"
         style={{ scrollbarWidth: "none" }}
       />
 
-      <AnimatePresence mode="wait" initial={false}>
-        {isStreaming ? (
-          <motion.button
-            key="stop"
-            onClick={onStop}
-            aria-label="Dừng phản hồi"
-            className="flex-none self-center w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center hover:bg-gray-400 transition-colors cursor-pointer"
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.6, opacity: 0 }}
-            transition={{ duration: 0.12 }}
-          >
-            <Square size={11} strokeWidth={0} className="fill-current" />
-          </motion.button>
-        ) : (
-          <motion.button
-            key="send"
-            onClick={submit}
-            disabled={!hasText}
-            aria-label="Gửi tin nhắn"
-            className="flex-none self-center w-8 h-8 rounded-full flex items-center justify-center text-white cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150"
-            style={{ backgroundColor: hasText ? BRAND_RED : "#D1D5DB" }}
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.6, opacity: 0 }}
-            transition={{ duration: 0.12 }}
-            whileTap={{ scale: 0.88 }}
-          >
-            <Send size={14} strokeWidth={2.5} />
-          </motion.button>
-        )}
-      </AnimatePresence>
+      <motion.button
+        onClick={submit}
+        disabled={!hasText || isLoading}
+        aria-label="Gửi tin nhắn"
+        className="flex-none self-center !w-8 !h-8 rounded-full flex items-center justify-center text-white cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-150"
+        style={{
+          backgroundColor: hasText && !isLoading ? BRAND_RED : "#D1D5DB",
+        }}
+        whileTap={{ scale: 0.88 }}
+        transition={{ duration: 0.12 }}
+      >
+        <Send size={14} strokeWidth={2.5} />
+      </motion.button>
     </>
   );
 });
@@ -463,12 +441,19 @@ const MessageInput = memo(function MessageInput({
 // ─────────────────────────────────────────────────────────────────────────────
 
 const ChatHeader = memo(function ChatHeader({
-  isStreaming,
+  isLoading,
+  chatMode,
   onClose,
 }: {
-  isStreaming: boolean;
+  isLoading: boolean;
+  chatMode: ChatResponseType | null;
   onClose: () => void;
 }) {
+  let subtitle = "Thường phản hồi ngay";
+  if (isLoading) subtitle = "Đang xử lý…";
+  else if (chatMode === "HumanOnline") subtitle = "Đang chat với admin";
+  else if (chatMode === "LeftMessage") subtitle = "Đã gửi tin nhắn";
+
   return (
     <div
       className="flex-shrink-0 flex items-center gap-3 !px-4 !py-3.5 rounded-t-2xl"
@@ -486,29 +471,16 @@ const ChatHeader = memo(function ChatHeader({
           Trợ lý AI · CNK Hà Đông
         </span>
         <AnimatePresence mode="wait" initial={false}>
-          {isStreaming ? (
-            <motion.span
-              key="typing"
-              className="block text-[11.5px] text-white/75 mt-0.5"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              Đang soạn tin nhắn…
-            </motion.span>
-          ) : (
-            <motion.span
-              key="online"
-              className="block text-[11.5px] text-white/75 mt-0.5"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              Thường phản hồi ngay
-            </motion.span>
-          )}
+          <motion.span
+            key={subtitle}
+            className="block text-[11.5px] text-white/75 !mt-0.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            {subtitle}
+          </motion.span>
         </AnimatePresence>
       </div>
 
@@ -529,17 +501,27 @@ const ChatHeader = memo(function ChatHeader({
 
 const ChatWindow = memo(function ChatWindow({
   messages,
-  isStreaming,
+  isLoading,
+  chatMode,
   onSend,
-  onStop,
   onClose,
 }: {
   messages: Message[];
-  isStreaming: boolean;
+  isLoading: boolean;
+  chatMode: ChatResponseType | null;
   onSend: (text: string) => void;
-  onStop: () => void;
   onClose: () => void;
 }) {
+  // Show suggests when idle (no messages) OR after last bot/system message and not loading
+  const lastMsg = messages[messages.length - 1];
+  const showSuggests =
+    !isLoading &&
+    chatMode !== "HumanOnline" &&
+    chatMode !== "LeftMessage" &&
+    (messages.length === 0 ||
+      lastMsg?.role === "assistant" ||
+      lastMsg?.role === "system");
+
   return (
     <motion.div
       role="dialog"
@@ -551,26 +533,21 @@ const ChatWindow = memo(function ChatWindow({
       exit={{ opacity: 0, scale: 0.9, y: 20 }}
       transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
     >
-      <ChatHeader isStreaming={isStreaming} onClose={onClose} />
-      <MessageList messages={messages} isStreaming={isStreaming} />
+      <ChatHeader isLoading={isLoading} chatMode={chatMode} onClose={onClose} />
+      <MessageList messages={messages} isLoading={isLoading} />
+
+      <StatusBanner chatMode={chatMode} />
 
       {/* Footer */}
-      <div className="flex-shrink-0 px-4 pt-3 pb-4 bg-white border-t border-gray-100">
-        <StarterQuestions
-          onSelect={onSend}
-          visible={messages.length === 0 && !isStreaming}
-        />
+      <div className="flex-shrink-0 px-4 pt-2 pb-4 bg-white border-t border-gray-100">
+        <StarterQuestions onSelect={onSend} visible={showSuggests} />
 
         {/* Input pill */}
-        <div className="relative flex items-center gap-2.5 bg-gray-100 rounded-2xl min-h-[46px] focus-within:ring-1 focus-within:ring-red-200 transition-all duration-150 !mt-4 !mx-[10px] !p-[16px]">
-          <MessageInput
-            onSend={onSend}
-            onStop={onStop}
-            isStreaming={isStreaming}
-          />
+        <div className="relative flex items-center gap-2.5 bg-gray-100 rounded-2xl min-h-[46px] focus-within:ring-1 focus-within:ring-red-200 transition-all duration-150 !mx-1 !px-4 !py-2.5">
+          <MessageInput onSend={onSend} isLoading={isLoading} />
         </div>
 
-        <p className="text-[10px] text-gray-400 text-center !mt-2.5 select-none leading-none">
+        <p className="text-[10px] text-gray-400 text-center mt-2 select-none leading-none">
           Phản hồi có thể mất vài giây để xử lý
         </p>
       </div>
@@ -735,24 +712,65 @@ export default function BubbleChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
-  const messagesRef = useRef<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [chatMode, setChatMode] = useState<ChatResponseType | null>(null);
+  const [chatRoomId, setChatRoomId] = useState<string | null>(null);
+  const [sessionId] = useState(getOrCreateSessionId);
 
+  const messagesRef = useRef<Message[]>([]);
   messagesRef.current = messages;
+
+  // Firebase subscriptions
+  const { messages: firebaseMessages } = useChatRoom(
+    chatMode === "HumanOnline" ? chatRoomId : null,
+  );
+  const { notification } = useUserNotification(
+    chatMode === "LeftMessage" ? sessionId : null,
+  );
+
+  // Sync Firebase messages into local messages when in HumanOnline mode
+  useEffect(() => {
+    if (chatMode !== "HumanOnline" || firebaseMessages.length === 0) return;
+    // Only add messages that aren't already in the list
+    const existingKeys = new Set(messagesRef.current.map((m) => m.id));
+    const newMsgs = firebaseMessages
+      .filter((fm) => !existingKeys.has(fm.key))
+      .map((fm) => ({
+        id: fm.key,
+        role: fm.sender === "user" ? ("user" as const) : ("assistant" as const),
+        content: fm.text,
+        timestamp: new Date(fm.timestamp),
+      }));
+    if (newMsgs.length > 0) {
+      setMessages((prev) => [...prev, ...newMsgs]);
+    }
+  }, [firebaseMessages, chatMode]);
+
+  // Show admin reply when LeftMessage notification arrives
+  useEffect(() => {
+    if (!notification) return;
+    const replyMsg: Message = {
+      id: `notif-${notification.repliedAt}`,
+      role: "assistant",
+      content: notification.reply,
+      timestamp: new Date(notification.repliedAt),
+    };
+    setMessages((prev) => {
+      if (prev.some((m) => m.id === replyMsg.id)) return prev;
+      return [...prev, replyMsg];
+    });
+    setHasUnread(true);
+    setChatMode(null);
+  }, [notification]);
 
   const handleToggle = useCallback(() => {
     setIsOpen((prev) => !prev);
     setHasUnread(false);
   }, []);
 
-  const handleStop = useCallback(() => {
-    abortRef.current?.abort();
-  }, []);
-
   const handleSend = useCallback(
     async (content: string) => {
-      if (isStreaming) return;
+      if (isLoading) return;
 
       const userMsg: Message = {
         id: genId(),
@@ -760,83 +778,75 @@ export default function BubbleChat() {
         content,
         timestamp: new Date(),
       };
-      const assistantMsg: Message = {
-        id: genId(),
-        role: "assistant",
-        content: "",
-        isStreaming: true,
-        timestamp: new Date(),
-      };
 
-      const historySnapshot = messagesRef.current.map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
+      const history: ChatHistoryItem[] = messagesRef.current
+        .filter((m) => m.role === "user" || m.role === "assistant")
+        .map((m) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        }));
 
-      setMessages((prev) => [...prev, userMsg, assistantMsg]);
-      setIsStreaming(true);
-
-      const controller = new AbortController();
-      abortRef.current = controller;
-
-      let prevLen = 0;
+      setMessages((prev) => [...prev, userMsg]);
+      setIsLoading(true);
 
       try {
-        await chatApi.streamMessage(
-          { message: content, history: historySnapshot } satisfies ChatRequest,
-          (evt) => {
-            const full: string =
-              (evt.event as XMLHttpRequest).responseText ?? "";
-            const newChunk = full.slice(prevLen);
-            prevLen = full.length;
-            const text = parseChunk(newChunk);
-            if (text) {
-              setMessages((prev) =>
-                prev.map((m, i) =>
-                  i === prev.length - 1
-                    ? { ...m, content: m.content + text }
-                    : m,
-                ),
-              );
-            }
-          },
-          controller.signal,
-        );
+        const res = await chatApi.sendMessage({
+          sessionId,
+          userMessage: content,
+          history,
+        });
+
+        const data = res.data?.data;
+        if (!data) throw new Error("Empty response");
+
+        if (data.type === "AI") {
+          const assistantMsg: Message = {
+            id: genId(),
+            role: "assistant",
+            content: data.answer ?? "",
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, assistantMsg]);
+          setChatMode("AI");
+        } else if (data.type === "HumanOnline" && data.chatRoomId) {
+          setChatRoomId(data.chatRoomId);
+          setChatMode("HumanOnline");
+          const sysMsg: Message = {
+            id: genId(),
+            role: "system",
+            content: "Đã kết nối với admin — bạn có thể tiếp tục nhắn tin.",
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, sysMsg]);
+        } else if (data.type === "LeftMessage") {
+          setChatMode("LeftMessage");
+          const sysMsg: Message = {
+            id: genId(),
+            role: "system",
+            content:
+              "Đã ghi nhận câu hỏi của bạn. Admin sẽ phản hồi sớm nhất có thể — hãy giữ tab này mở.",
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, sysMsg]);
+        }
       } catch (err) {
-        if (isAxiosError(err) && err.code === "ERR_CANCELED") return;
         const msg = isAxiosError(err)
           ? (err.response?.data?.error ?? err.message)
           : (err as Error).message;
-        console.error("[BubbleChat] Axios error:", msg);
-        setMessages((prev) =>
-          prev.map((m, i) =>
-            i === prev.length - 1
-              ? {
-                  ...m,
-                  content:
-                    "Xin lỗi, đã xảy ra lỗi kết nối. Vui lòng thử lại sau hoặc gọi hotline để được hỗ trợ.",
-                }
-              : m,
-          ),
-        );
+        console.error("[BubbleChat] Error:", msg);
+        const errMsg: Message = {
+          id: genId(),
+          role: "assistant",
+          content:
+            "Xin lỗi, đã xảy ra lỗi kết nối. Vui lòng thử lại sau hoặc gọi hotline để được hỗ trợ.",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, errMsg]);
       } finally {
-        setMessages((prev) =>
-          prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, isStreaming: false } : m,
-          ),
-        );
-        setIsStreaming(false);
-        abortRef.current = null;
+        setIsLoading(false);
       }
     },
-    [isStreaming],
-  );
-
-  useEffect(
-    () => () => {
-      abortRef.current?.abort();
-    },
-    [],
+    [isLoading, sessionId],
   );
 
   useEffect(() => {
@@ -853,9 +863,9 @@ export default function BubbleChat() {
         {isOpen && (
           <ChatWindow
             messages={messages}
-            isStreaming={isStreaming}
+            isLoading={isLoading}
+            chatMode={chatMode}
             onSend={handleSend}
-            onStop={handleStop}
             onClose={handleToggle}
           />
         )}
