@@ -8,17 +8,19 @@ const HEADERS = [
   'Họ và tên',
   'Tuổi',
   'Số điện thoại',
-  'Mục đích',
+  'Mục đích tham gia',
   'Hình thức',
   'Cơ sở',
 ];
 
-// ✅ Fix đơn giản, đúng
+// Column widths (pixels)
+const COLUMN_WIDTHS = [160, 280, 80, 160, 250, 120, 290];
+
 function parsePrivateKey(raw: string | undefined): string {
   if (!raw) return '';
   return raw
-    .replace(/^["']+|["']+$/g, '') // strip quotes
-    .replace(/\\n/g, '\n')          // literal \n → real newline
+    .replace(/^["']+|["']+$/g, '')
+    .replace(/\\n/g, '\n')
     .trim();
 }
 
@@ -53,6 +55,17 @@ function getGoogleSheetsClient() {
   });
 
   return google.sheets({ version: 'v4', auth });
+}
+
+async function getSheetId(
+  sheets: ReturnType<typeof google.sheets>,
+  spreadsheetId: string
+): Promise<number | undefined> {
+  const res = await sheets.spreadsheets.get({ spreadsheetId });
+  return (
+    res.data.sheets?.find((s) => s.properties?.title === SHEET_NAME)
+      ?.properties?.sheetId ?? undefined
+  );
 }
 
 async function ensureHeadersExist(
@@ -95,6 +108,132 @@ async function ensureHeadersExist(
   }
 }
 
+async function formatSheet(
+  sheets: ReturnType<typeof google.sheets>,
+  spreadsheetId: string
+) {
+  const sheetId = await getSheetId(sheets, spreadsheetId);
+  if (sheetId === undefined) {
+    console.warn('[Sheets] ⚠️ Không tìm thấy sheetId để format');
+    return;
+  }
+
+  const requests: object[] = [];
+
+  // 1. Header style: nền xanh, chữ trắng bold, căn giữa
+  requests.push({
+    repeatCell: {
+      range: {
+        sheetId,
+        startRowIndex: 0,
+        endRowIndex: 1,
+        startColumnIndex: 0,
+        endColumnIndex: HEADERS.length,
+      },
+      cell: {
+        userEnteredFormat: {
+          backgroundColor: { red: 0.26, green: 0.52, blue: 0.96 },
+          textFormat: {
+            bold: true,
+            foregroundColor: { red: 1, green: 1, blue: 1 },
+            fontSize: 11,
+          },
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          wrapStrategy: 'CLIP',
+        },
+      },
+      fields:
+        'userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment,wrapStrategy)',
+    },
+  });
+
+  // 2. Freeze row 1
+  requests.push({
+    updateSheetProperties: {
+      properties: {
+        sheetId,
+        gridProperties: { frozenRowCount: 1 },
+      },
+      fields: 'gridProperties.frozenRowCount',
+    },
+  });
+
+  // 3. Column widths
+  COLUMN_WIDTHS.forEach((pixelSize, index) => {
+    requests.push({
+      updateDimensionProperties: {
+        range: {
+          sheetId,
+          dimension: 'COLUMNS',
+          startIndex: index,
+          endIndex: index + 1,
+        },
+        properties: { pixelSize },
+        fields: 'pixelSize',
+      },
+    });
+  });
+
+  // 4. Border toàn bộ vùng A1:G500
+  requests.push({
+    updateBorders: {
+      range: {
+        sheetId,
+        startRowIndex: 0,
+        endRowIndex: 500,
+        startColumnIndex: 0,
+        endColumnIndex: HEADERS.length,
+      },
+      top:    { style: 'SOLID', width: 1, color: { red: 0.8, green: 0.8, blue: 0.8 } },
+      bottom: { style: 'SOLID', width: 1, color: { red: 0.8, green: 0.8, blue: 0.8 } },
+      left:   { style: 'SOLID', width: 1, color: { red: 0.8, green: 0.8, blue: 0.8 } },
+      right:  { style: 'SOLID', width: 1, color: { red: 0.8, green: 0.8, blue: 0.8 } },
+      innerHorizontal: { style: 'SOLID', width: 1, color: { red: 0.8, green: 0.8, blue: 0.8 } },
+      innerVertical:   { style: 'SOLID', width: 1, color: { red: 0.8, green: 0.8, blue: 0.8 } },
+    },
+  });
+
+  // 5. Header row height = 40px
+  requests.push({
+    updateDimensionProperties: {
+      range: {
+        sheetId,
+        dimension: 'ROWS',
+        startIndex: 0,
+        endIndex: 1,
+      },
+      properties: { pixelSize: 40 },
+      fields: 'pixelSize',
+    },
+  });
+
+  // ✅ 6. Set cột "Số điện thoại" (index 3) = TEXT format
+  requests.push({
+    repeatCell: {
+      range: {
+        sheetId,
+        startRowIndex: 1,
+        startColumnIndex: 3,
+        endColumnIndex: 4,
+      },
+      cell: {
+        userEnteredFormat: {
+          numberFormat: { type: 'TEXT' },
+        },
+      },
+      fields: 'userEnteredFormat.numberFormat',
+    },
+  });
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: { requests },
+  });
+
+  console.log('[Sheets] ✅ Format sheet OK');
+}
+
 export async function POST(request: NextRequest) {
   console.log('[submit-registration] ===== START =====');
 
@@ -128,19 +267,38 @@ export async function POST(request: NextRequest) {
 
   try {
     const sheets = getGoogleSheetsClient();
+
+    // Step 1: Ensure headers
     await ensureHeadersExist(sheets, spreadsheetId);
 
+    // Step 2: Append data — phone dùng `'${phone}` để giữ số 0 đầu
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: `${SHEET_NAME}!A1`,
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       requestBody: {
-        values: [[timestamp, fullName, age, phone, purpose, trainingType, location]],
+        values: [[
+          timestamp,
+          fullName,
+          age,
+          `'${phone}`,   // ✅ giữ số 0 đầu
+          purpose,
+          trainingType,
+          location,
+        ]],
       },
     });
 
     console.log('[submit-registration] ✅ Ghi thành công:', { fullName, phone });
+
+    // Step 3: Format sheet (non-critical)
+    try {
+      await formatSheet(sheets, spreadsheetId);
+    } catch (fmtErr) {
+      console.warn('[Sheets] ⚠️ Format failed (non-critical):', fmtErr);
+    }
+
     return NextResponse.json({ success: true, message: 'Đăng ký thành công' });
 
   } catch (error: unknown) {
