@@ -4,6 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useSubmitRegistration } from "../lib/hooks/useRegistration";
+import { useUserLocation } from "../lib/hooks/useUserLocation";
+import { useNearestBranch } from "../lib/hooks/useNearestBranch";
+import { BRANCHES } from "../lib/data/branches";
+import LocationButton from "./LocationButton";
+import NearestBranchBanner from "./NearestBranchBanner";
 import styles from "./PopupRegistration.module.css";
 
 interface RegistrationFormData {
@@ -28,7 +33,14 @@ export default function PopupRegistration() {
     location: "",
   });
 
+  // Track whether user has manually picked a branch — prevents auto-override
+  const [userPickedBranch, setUserPickedBranch] = useState(false);
+
   const submitMutation = useSubmitRegistration();
+
+  // Location hooks — requestLocation is only called on button click, never on mount
+  const { location, status: locationStatus, requestLocation } = useUserLocation();
+  const nearestBranch = useNearestBranch(location);
 
   useEffect(() => setMounted(true), []);
 
@@ -52,6 +64,13 @@ export default function PopupRegistration() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasShown]);
 
+  // Auto-fill location with nearest branch only if user hasn't manually picked one
+  useEffect(() => {
+    if (nearestBranch && !userPickedBranch) {
+      setFormData((prev) => ({ ...prev, location: nearestBranch.branch.id }));
+    }
+  }, [nearestBranch, userPickedBranch]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -64,6 +83,7 @@ export default function PopupRegistration() {
         trainingType: "",
         location: "",
       });
+      setUserPickedBranch(false);
       alert("🎉 Đăng ký thành công!");
       setIsOpen(false);
     } catch {
@@ -71,13 +91,10 @@ export default function PopupRegistration() {
     }
   };
 
-  const locations = [
-    { id: "van-yen", name: "Văn Yên - Hà Đông", fee: "Miễn phí" },
-    { id: "kien-hung", name: "Kiến Hưng - Hà Đông", fee: "Miễn phí" },
-    { id: "thong-nhat", name: "CV Thống Nhất", fee: "300k" },
-    { id: "hoa-binh", name: "CV Hòa Bình", fee: "300k" },
-    { id: "kim-giang", name: "Kim Giang", fee: "300k" },
-  ];
+  // When user clicks "Đổi cơ sở" in the banner → focus select + allow manual pick
+  const handleChangeBranch = () => {
+    setUserPickedBranch(true);
+  };
 
   if (!mounted) return null;
 
@@ -169,6 +186,37 @@ export default function PopupRegistration() {
                 className={styles.formInput}
               />
 
+              {/* ── Location suggestion area ─────────────────────────── */}
+
+              {/* Show button when idle/failed (never auto-request) */}
+              {(locationStatus === "idle" ||
+                locationStatus === "denied" ||
+                locationStatus === "timeout" ||
+                locationStatus === "error") && (
+                <LocationButton
+                  status={locationStatus}
+                  onRequest={requestLocation}
+                />
+              )}
+
+              {/* Loading state inline */}
+              {locationStatus === "loading" && (
+                <LocationButton
+                  status={locationStatus}
+                  onRequest={requestLocation}
+                />
+              )}
+
+              {/* Nearest branch banner (compact for popup) */}
+              {nearestBranch && (
+                <NearestBranchBanner
+                  result={nearestBranch}
+                  onChangeBranch={handleChangeBranch}
+                  compact
+                />
+              )}
+
+              {/* ── Form selects ──────────────────────────────────────── */}
               <div className={styles.formRow}>
                 <select
                   value={formData.trainingType}
@@ -186,21 +234,38 @@ export default function PopupRegistration() {
                   <option value="online">Online</option>
                 </select>
 
-                <select
-                  value={formData.location}
-                  onChange={(e) =>
-                    setFormData({ ...formData, location: e.target.value })
-                  }
-                  required
-                  className={styles.formSelect}
-                >
-                  <option value="">Cơ sở *</option>
-                  {locations.map((loc) => (
-                    <option key={loc.id} value={loc.id}>
-                      {loc.name}
-                    </option>
-                  ))}
-                </select>
+                {/* Branch select — auto-filled when nearest branch is found */}
+                <div className={styles.selectWrapper}>
+                  <select
+                    value={formData.location}
+                    onChange={(e) => {
+                      // Mark as manually picked so we don't override it
+                      setUserPickedBranch(true);
+                      setFormData({ ...formData, location: e.target.value });
+                    }}
+                    required
+                    className={styles.formSelect}
+                    aria-label="Chọn cơ sở tập luyện"
+                  >
+                    <option value="">Cơ sở *</option>
+                    {BRANCHES.map((branch) => {
+                      const isNearest =
+                        nearestBranch?.branch.id === branch.id;
+                      return (
+                        <option key={branch.id} value={branch.id}>
+                          {branch.shortName}
+                          {isNearest ? " ★" : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {/* Tooltip-style badge for nearest branch */}
+                  {nearestBranch && !userPickedBranch && (
+                    <span className={styles.suggestedBadge} title="Hệ thống gợi ý dựa trên vị trí hiện tại của bạn">
+                      Gợi ý
+                    </span>
+                  )}
+                </div>
               </div>
 
               <button

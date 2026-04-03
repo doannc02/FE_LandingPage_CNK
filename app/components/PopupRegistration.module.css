@@ -157,6 +157,29 @@
   color: #d32f2f;
 }
 
+/* Wrapper for the branch select + suggestion badge */
+.selectWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* "Gợi ý" badge shown when auto-filled by location */
+.suggestedBadge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #d32f2f 0%, #ffa000 100%);
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+  cursor: default;
+  /* Tooltip via title attribute — no JS needed */
+}
+
 @media (max-width: 640px) {
   .popup {
     width: 95%;
