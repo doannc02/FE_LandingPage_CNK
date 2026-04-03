@@ -1,0 +1,111 @@
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.06) 0%, rgba(255, 160, 0, 0.05) 100%);
+  border: 1.5px solid rgba(211, 47, 47, 0.25);
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.compact {
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+}
+
+/* Left content */
+.content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0; /* allow text truncation */
+}
+
+.pin {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.info {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.label {
+  font-size: 0.78rem;
+  color: #666;
+  white-space: nowrap;
+}
+
+.name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #d32f2f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact .name {
+  font-size: 0.8rem;
+}
+
+.distance {
+  font-size: 0.75rem;
+  color: #888;
+  white-space: nowrap;
+}
+
+/* Right actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.mapsLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1a73e8;
+  background: rgba(26, 115, 232, 0.08);
+  border: 1px solid rgba(26, 115, 232, 0.3);
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mapsLink:hover {
+  background: rgba(26, 115, 232, 0.15);
+  border-color: rgba(26, 115, 232, 0.5);
+}
+
+.changeBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.changeBtn:hover {
+  background: #ebebeb;
+  color: #333;
+  border-color: #bbb;
+}

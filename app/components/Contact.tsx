@@ -1,10 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./Contact.module.css";
 import { useSubmitContact } from "../lib/hooks/useContact";
 import { useSyncToSheets } from "../lib/hooks/useGoogleSheets"; // ← THÊM
+import { useUserLocation } from "../lib/hooks/useUserLocation";
+import { useNearestBranch } from "../lib/hooks/useNearestBranch";
+import { BRANCHES } from "../lib/data/branches";
+import LocationButton from "./LocationButton";
+import NearestBranchBanner from "./NearestBranchBanner";
 
 /* =======================
    ANIMATION VARIANTS
@@ -50,6 +55,18 @@ export default function Contact() {
 
   const submitMutation = useSubmitContact();
   const syncMutation = useSyncToSheets(); // ← THÊM
+
+  // Location-based branch suggestion — never auto-requests, only on button click
+  const [userPickedBranch, setUserPickedBranch] = useState(false);
+  const { location, status: locationStatus, requestLocation } = useUserLocation();
+  const nearestBranch = useNearestBranch(location);
+
+  // Auto-fill branch when nearest is found, unless user already picked manually
+  useEffect(() => {
+    if (nearestBranch && !userPickedBranch) {
+      setFormData((prev) => ({ ...prev, location: nearestBranch.branch.id }));
+    }
+  }, [nearestBranch, userPickedBranch]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -104,6 +121,7 @@ export default function Contact() {
         location: "",
         message: "",
       });
+      setUserPickedBranch(false);
 
       // BƯỚC 4: Thông báo thành công
       alert("🎉 Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.");
@@ -113,49 +131,8 @@ export default function Contact() {
     }
   };
 
-  // ✅ DANH SÁCH ĐẦY ĐỦ 5 CƠ SỞ
-  const locations = [
-    {
-      id: "van-yen",
-      name: "Cơ sở 1: Trường TH Văn Yên - Hà Đông",
-      schedule: "Thứ 2-4-6 | 18:30-20:30",
-      fee: "MIỄN PHÍ",
-      isFree: true,
-      description: "Cơ sở chính, miễn phí hoàn toàn cho mọi lứa tuổi",
-    },
-    {
-      id: "kien-hung",
-      name: "Cơ sở 2: Vườn hoa Hằng Bè - Kiến Hưng",
-      schedule: "Thứ 3-5-7 | 17:45-19:00",
-      fee: "MIỄN PHÍ",
-      isFree: true,
-      description: "Cơ sở 2 tại Hà Đông, miễn phí hoàn toàn",
-    },
-    {
-      id: "thong-nhat",
-      name: "Cơ sở 3: Công viên Thống Nhất - Hai Bà Trưng",
-      schedule: "Liên hệ để biết lịch cụ thể",
-      fee: "300.000đ/tháng",
-      isFree: false,
-      description: "Công viên Thống Nhất, quận Hai Bà Trưng",
-    },
-    {
-      id: "hoa-binh",
-      name: "Cơ sở 4: Công viên Hòa Bình - Bắc Từ Liêm",
-      schedule: "Thứ 3-5-7",
-      fee: "300.000đ/tháng",
-      isFree: false,
-      description: "Công viên Hòa Bình, quận Bắc Từ Liêm",
-    },
-    {
-      id: "kim-giang",
-      name: "Cơ sở 5: Kim Giang - Thanh Xuân",
-      schedule: "Liên hệ để biết lịch cụ thể",
-      fee: "300.000đ/tháng",
-      isFree: false,
-      description: "Khu vực Kim Giang, quận Thanh Xuân",
-    },
-  ];
+  // Branch list comes from centralized data (includes lat/lng for suggestion feature)
+  const locations = BRANCHES;
 
   return (
     <section className="section" id="contact">
@@ -385,20 +362,55 @@ export default function Contact() {
                 variants={formItemVariants}
                 custom={1}
               >
-                <label>Cơ sở tập luyện *</label>
-                <select
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Chọn cơ sở</option>
-                  {locations.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.name} - {l.fee}
-                    </option>
-                  ))}
-                </select>
+                {/* Label row: title + location button */}
+                <div className={styles.labelRow}>
+                  <label>Cơ sở tập luyện *</label>
+                  <LocationButton
+                    status={locationStatus}
+                    onRequest={requestLocation}
+                  />
+                </div>
+
+                {/* Nearest branch banner shown after location obtained */}
+                {nearestBranch && (
+                  <NearestBranchBanner
+                    result={nearestBranch}
+                    onChangeBranch={() => setUserPickedBranch(true)}
+                  />
+                )}
+
+                <div className={styles.selectWrapper}>
+                  <select
+                    name="location"
+                    value={formData.location}
+                    onChange={(e) => {
+                      setUserPickedBranch(true);
+                      handleChange(e);
+                    }}
+                    required
+                    aria-label="Chọn cơ sở tập luyện"
+                  >
+                    <option value="">Chọn cơ sở</option>
+                    {BRANCHES.map((branch) => {
+                      const isNearest = nearestBranch?.branch.id === branch.id;
+                      return (
+                        <option key={branch.id} value={branch.id}>
+                          {branch.name} - {branch.fee}
+                          {isNearest ? " ★ Gợi ý" : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {/* "Gợi ý" badge visible when auto-filled */}
+                  {nearestBranch && !userPickedBranch && (
+                    <span
+                      className={styles.suggestedBadge}
+                      title="Hệ thống gợi ý dựa trên vị trí hiện tại của bạn"
+                    >
+                      Gợi ý
+                    </span>
+                  )}
+                </div>
               </motion.div>
             </div>
 

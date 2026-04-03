@@ -1,0 +1,64 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4a4a4a;
+  background: #ffffff;
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  border-radius: 9999px; /* pill */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.button:hover:not(:disabled) {
+  border-color: rgba(211, 47, 47, 0.4);
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+/* Spinner for loading state */
+.spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(211, 47, 47, 0.2);
+  border-top-color: #d32f2f;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.microcopy {
+  font-size: 0.72rem;
+  color: #888;
+  margin: 0;
+  padding-left: 0.2rem;
+}
