@@ -24,16 +24,40 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor - Handle errors
+// Response interceptor — tự động refresh token khi nhận 401
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      // Token hết hạn - Redirect to login
+    const originalRequest = error.config as typeof error.config & { _retry?: boolean };
+
+    if (error.response?.status === 401 && !originalRequest?._retry) {
+      originalRequest._retry = true;
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (refreshToken) {
+        try {
+          const res = await axios.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
+            `${API_BASE_URL}/auth/refresh`,
+            { refreshToken }
+          );
+
+          if (res.data.isSuccess && res.data.data) {
+            const { accessToken, refreshToken: newRefresh } = res.data.data;
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", newRefresh);
+            originalRequest!.headers!.Authorization = `Bearer ${accessToken}`;
+            return apiClient(originalRequest!);
+          }
+        } catch {
+          // refresh thất bại — logout
+        }
+      }
+
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       window.location.href = "/login";
     }
+
     return Promise.reject(error);
   }
 );

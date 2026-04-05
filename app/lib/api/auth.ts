@@ -40,13 +40,36 @@ export const authApi = {
       '/auth/login',
       data
     );
-    
-    // Lưu tokens vào localStorage
+
     if (response.data.isSuccess && response.data.data) {
       localStorage.setItem('accessToken', response.data.data.accessToken);
       localStorage.setItem('refreshToken', response.data.data.refreshToken);
     }
-    
+
+    return response.data;
+  },
+
+  /** SSO — đổi Firebase ID Token lấy JWT nội bộ */
+  exchangeToken: async (firebaseIdToken: string) => {
+    const response = await apiClient.post<ApiResponse<AuthResponse>>(
+      '/auth/exchange-token',
+      { firebaseIdToken }
+    );
+
+    if (response.data.isSuccess && response.data.data) {
+      localStorage.setItem('accessToken', response.data.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.data.refreshToken);
+    }
+
+    return response.data;
+  },
+
+  /** Phân quyền — chỉ SuperAdmin được gọi */
+  assignRole: async (targetUserId: string, role: 'SuperAdmin' | 'SubAdmin' | 'Student') => {
+    const response = await apiClient.post<ApiResponse<null>>(
+      '/auth/assign-role',
+      { targetUserId, role }
+    );
     return response.data;
   },
 
