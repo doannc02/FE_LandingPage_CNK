@@ -3,11 +3,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
 // Initialize Google Sheets API
+function parsePrivateKey(raw: string | undefined): string {
+  if (!raw) return '';
+  return raw
+    .replace(/^["']|["']$/g, '')  // strip surrounding quotes if Vercel included them
+    .replace(/\\n/g, '\n');        // convert literal \n to real newlines
+}
+
 const getGoogleSheetsClient = () => {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      private_key: parsePrivateKey(process.env.GOOGLE_PRIVATE_KEY),
     },
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
