@@ -49,11 +49,13 @@ export const authApi = {
     return response.data;
   },
 
-  /** SSO — đổi Firebase ID Token lấy JWT nội bộ */
+  /** SSO — đổi Firebase ID Token lấy JWT nội bộ.
+   *  Gọi qua Next.js proxy để tránh CORS (browser → localhost → backend). */
   exchangeToken: async (firebaseIdToken: string) => {
     const response = await apiClient.post<ApiResponse<AuthResponse>>(
-      '/auth/exchange-token',
-      { firebaseIdToken }
+      '/api/auth/exchange-token',
+      { firebaseIdToken },
+      { baseURL: typeof window !== 'undefined' ? window.location.origin : '' }
     );
 
     if (response.data.isSuccess && response.data.data) {

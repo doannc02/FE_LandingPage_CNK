@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bot, X, Send, MessageCircle, UserCheck, Clock } from "lucide-react";
 import { isAxiosError } from "axios";
 import type { Message, ChatHistoryItem, ChatResponseType } from "./types";
-import { chatApi } from "@/app/lib/api/chat";
+import { chatApi, type ChatHistoryResponse } from "@/app/lib/api/chat";
 import { useChatRoom } from "@/app/hooks/useChatRoom";
 import { useUserNotification } from "@/app/hooks/useUserNotification";
 
@@ -785,9 +785,11 @@ export default function BubbleChat() {
   }, [isOpen, isMobile]);
 
   // Firebase subscriptions
-  const { messages: firebaseMessages } = useChatRoom(
-    chatMode === "HumanOnline" ? chatRoomId : null,
-  );
+  const {
+    messages: firebaseMessages,
+    status: roomStatus,
+    sendMessage: sendFirebaseMessage,
+  } = useChatRoom(chatMode === "HumanOnline" ? chatRoomId : null);
   const { notification } = useUserNotification(
     chatMode === "LeftMessage" ? sessionId : null,
   );
@@ -826,6 +828,57 @@ export default function BubbleChat() {
     setChatMode(null);
   }, [notification]);
 
+  // Handle admin closing the chat room (HumanOnline → back to AI)
+  useEffect(() => {
+    if (roomStatus !== "closed" || chatMode !== "HumanOnline") return;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: genId(),
+        role: "system" as const,
+        content: "Phiên chat với admin đã kết thúc. Bạn có thể tiếp tục hỏi bot.",
+        timestamp: new Date(),
+      },
+    ]);
+    setChatMode("AI");
+    setChatRoomId(null);
+  }, [roomStatus, chatMode]);
+
+  // Restore session history on mount
+  useEffect(() => {
+    async function restore() {
+      try {
+        const res = await chatApi.getHistory(sessionId);
+        const hist: ChatHistoryResponse | undefined = res.data?.data;
+        if (!hist || hist.status === "None" || hist.messages.length === 0) return;
+
+        setMessages(
+          hist.messages.map((m) => ({
+            id: m.id,
+            role: m.role === "User" ? ("user" as const) : ("assistant" as const),
+            content: m.content,
+            timestamp: new Date(m.createdAt),
+          }))
+        );
+
+        if (hist.status === "HumanHandoff") {
+          if (hist.handoffType === "Firebase" && hist.firebaseChatRoomId) {
+            setChatRoomId(hist.firebaseChatRoomId);
+            setChatMode("HumanOnline");
+          } else if (hist.handoffType === "Pending") {
+            setChatMode("LeftMessage");
+          }
+        } else if (hist.status === "BotHandling" || hist.status === "Closed") {
+          setChatMode("AI");
+        }
+      } catch {
+        // Silent — non-critical, user can still chat fresh
+      }
+    }
+    restore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleToggle = useCallback(() => {
     setIsOpen((prev) => !prev);
     setHasUnread(false);
@@ -834,6 +887,19 @@ export default function BubbleChat() {
   const handleSend = useCallback(
     async (content: string) => {
       if (isLoading) return;
+
+      // HumanOnline: send directly to Firebase, bypass the routing API
+      if (chatMode === "HumanOnline") {
+        const userMsg: Message = {
+          id: genId(),
+          role: "user",
+          content,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, userMsg]);
+        await sendFirebaseMessage(content);
+        return;
+      }
 
       const userMsg: Message = {
         id: genId(),
@@ -909,7 +975,7 @@ export default function BubbleChat() {
         setIsLoading(false);
       }
     },
-    [isLoading, sessionId],
+    [isLoading, sessionId, chatMode, sendFirebaseMessage],
   );
 
   useEffect(() => {

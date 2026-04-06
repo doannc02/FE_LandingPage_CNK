@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./styles/globals.css";
 import { QueryProvider } from "./providers/QueryProvider";
+import { AuthProvider } from "./context/AuthContext";
 import BubbleChat from "./components/Chat/BubbleChat";
 
 export const metadata: Metadata = {
@@ -174,7 +175,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProvider>
         <BubbleChat />
       </body>
     </html>

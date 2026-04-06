@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://103.126.161.89/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://api.dangcapnc.io.vn/api";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -10,12 +10,14 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor - Thêm token vào header
+// Request interceptor - Thêm token vào header (guard cho SSR)
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -32,7 +34,7 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest?._retry) {
       originalRequest._retry = true;
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken = typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null;
 
       if (refreshToken) {
         try {
@@ -53,9 +55,11 @@ apiClient.interceptors.response.use(
         }
       }
 
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      window.location.href = "/login";
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+      }
     }
 
     return Promise.reject(error);

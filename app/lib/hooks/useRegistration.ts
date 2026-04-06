@@ -1,5 +1,6 @@
 // lib/hooks/useRegistration.ts
 import { useMutation } from "@tanstack/react-query";
+import { apiClient } from "@/app/lib/api/client";
 
 interface RegistrationData {
   fullName: string;
@@ -38,18 +39,14 @@ async function submitRegistration(data: RegistrationData) {
     location: locationNames[data.location] || data.location,
   };
 
-  const response = await fetch("/api/submit-registration", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  // Gọi Next.js API route nội bộ — dùng baseURL: '' để không prefix backend URL
+  const response = await apiClient.post(
+    "/api/submit-registration",
+    payload,
+    { baseURL: "" }
+  );
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.error || "Gửi đăng ký thất bại");
-  }
-
-  return response.json();
+  return response.data;
 }
 
 export function useSubmitRegistration() {
