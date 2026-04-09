@@ -18,7 +18,7 @@ export function useUserNotification(sessionId: string | null) {
 
     const handler = onValue(notifRef, (snapshot) => {
       const data = snapshot.val() as FirebaseNotification | null;
-      if (data?.reply) {
+      if (data?.reply && !data.read) {
         setNotification(data);
       }
     });

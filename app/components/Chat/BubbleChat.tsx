@@ -774,6 +774,8 @@ export default function BubbleChat() {
   const isMobile = useIsMobile();
   const messagesRef = useRef<Message[]>([]);
   messagesRef.current = messages;
+  // Track Firebase message keys that have already been processed (to avoid duplicates)
+  const processedFirebaseKeys = useRef<Set<string>>(new Set());
 
   // Lock body scroll khi mobile chat mở
   useEffect(() => {
@@ -794,18 +796,24 @@ export default function BubbleChat() {
     chatMode === "LeftMessage" ? sessionId : null,
   );
 
-  // Sync Firebase messages into local messages when in HumanOnline mode
+  // Sync Firebase messages into local messages when in HumanOnline mode.
+  // Only add admin messages — user messages are already in local state when sent.
+  // Use processedFirebaseKeys to avoid duplicates across re-renders.
   useEffect(() => {
     if (chatMode !== "HumanOnline" || firebaseMessages.length === 0) return;
-    const existingKeys = new Set(messagesRef.current.map((m) => m.id));
-    const newMsgs = firebaseMessages
-      .filter((fm) => !existingKeys.has(fm.key))
-      .map((fm) => ({
+    const newMsgs: Message[] = [];
+    for (const fm of firebaseMessages) {
+      if (processedFirebaseKeys.current.has(fm.key)) continue;
+      processedFirebaseKeys.current.add(fm.key);
+      // Skip user's own messages — already added to local state on send
+      if (fm.sender === "user") continue;
+      newMsgs.push({
         id: fm.key,
-        role: fm.sender === "user" ? ("user" as const) : ("assistant" as const),
+        role: "assistant",
         content: fm.text,
         timestamp: new Date(fm.timestamp),
-      }));
+      });
+    }
     if (newMsgs.length > 0) {
       setMessages((prev) => [...prev, ...newMsgs]);
     }
@@ -827,6 +835,11 @@ export default function BubbleChat() {
     setHasUnread(true);
     setChatMode(null);
   }, [notification]);
+
+  // Reset processed keys when entering a new chat room
+  useEffect(() => {
+    processedFirebaseKeys.current = new Set();
+  }, [chatRoomId]);
 
   // Handle admin closing the chat room (HumanOnline → back to AI)
   useEffect(() => {
