@@ -62,7 +62,7 @@ export default function Hero() {
     {
       url: "https://www.youtube.com/embed/LsEXa9dJoZE",
       title: "Video giới thiệu 1",
-      badge: "Giới thiệu CLB",
+      badge: "Giới thiệu Võ đường",
       gridArea: "video1",
     },
     {

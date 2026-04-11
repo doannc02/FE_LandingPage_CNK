@@ -105,23 +105,27 @@ Cập nhật thông tin liên hệ trong JSON-LD schema (`app/layout.tsx`):
 ## 📊 SEO Best Practices đã áp dụng
 
 ### 1. Meta Tags
+
 - Title tags tối ưu (50-60 ký tự)
 - Meta description hấp dẫn (150-160 ký tự)
 - Keywords phù hợp với nội dung
 - Viewport và charset đúng chuẩn
 
 ### 2. Structured Data (JSON-LD)
-- SportsClub schema cho câu lạc bộ
+
+- SportsClub schema cho võ đường
 - WebSite schema cho website
 - Địa chỉ và tọa độ địa lý
 - Contact information
 
 ### 3. Open Graph & Twitter Cards
+
 - Tối ưu cho Facebook, LinkedIn
 - Twitter card với ảnh lớn
 - Title và description tùy chỉnh
 
 ### 4. Technical SEO
+
 - Sitemap.xml cho crawler
 - Robots.txt cho search engines
 - Canonical URLs
@@ -129,6 +133,7 @@ Cập nhật thông tin liên hệ trong JSON-LD schema (`app/layout.tsx`):
 - Performance optimization (compression, caching)
 
 ### 5. Performance
+
 - Image optimization (WebP, AVIF)
 - Font optimization với display: swap
 - Compression enabled
@@ -183,7 +188,7 @@ NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX
 - côn nhị khúc
 - nunchaku
 - võ thuật hà đông
-- câu lạc bộ võ thuật
+- võ đường võ thuật
 - martial arts
 - võ cổ truyền
 - tự vệ

@@ -9,8 +9,14 @@ import styles from "./Login.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { loginWithEmail, loginWithGoogle, user, isLoading, error, clearError } =
-    useAuthContext();
+  const {
+    loginWithEmail,
+    loginWithGoogle,
+    user,
+    isLoading,
+    error,
+    clearError,
+  } = useAuthContext();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,7 +53,7 @@ export default function LoginPage() {
         <Link href="/" className={styles.logoLink}>
           <Image
             src="/images/logo.png"
-            alt="CLB Côn Nhị Khúc Hà Đông"
+            alt="Võ đường Côn Nhị Khúc Hà Đông"
             width={56}
             height={56}
             className={styles.logoImage}

@@ -28,7 +28,7 @@ const STARTERS = [
   { label: "💰 Học phí?", query: "Học phí các khóa học là bao nhiêu?" },
   { label: "📅 Lịch học?", query: "Lịch học và giờ tập như thế nào?" },
   { label: "📝 Đăng ký?", query: "Tôi muốn đăng ký tham gia, cần làm gì?" },
-  { label: "📍 Địa chỉ?", query: "Địa chỉ câu lạc bộ ở đâu?" },
+  { label: "📍 Địa chỉ?", query: "Địa chỉ võ đường ở đâu?" },
 ] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -288,7 +288,7 @@ function MessageList({
 
           <div className="space-y-1.5">
             <p className="font-bold text-gray-800 text-sm leading-snug">
-              Trợ lý CLB Côn Nhị Khúc
+              Trợ lý Võ đường Côn Nhị Khúc
             </p>
             <p className="text-[12.5px] text-gray-500 leading-relaxed max-w-[210px]">
               Hỏi tôi bất cứ điều gì về lịch tập và võ đạo.
@@ -639,7 +639,7 @@ const GreetingTooltip = memo(function GreetingTooltip({
             </p>
             <p className="text-[12px] text-gray-500 mt-1.5 leading-[1.55]">
               Tôi có thể giúp bạn tìm hiểu về khóa học, lịch tập và đăng ký tại
-              CLB CNK.
+              Võ đường CNK.
             </p>
             <span
               aria-hidden

@@ -12,7 +12,7 @@ const Benefits: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const benefitsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [visibleBenefits, setVisibleBenefits] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
 
   const benefits: Benefit[] = [
@@ -28,28 +28,28 @@ const Benefits: React.FC = () => {
       title: "Phương pháp",
       highlight: "Total Immersion",
       description:
-        "CLB tạo môi trường tập luyện cộng đồng 100% tinh thần võ đạo, giúp học viên tiến bộ nhanh hơn 40% so với việc tự mày mò qua video. Chúng tôi không chỉ hướng đến việc thuộc bài quyền, mà còn đào tạo để học viên ứng dụng sự linh hoạt, phản xạ vào sức khỏe và kỷ luật trong cuộc sống.",
+        "Võ đường tạo môi trường tập luyện cộng đồng 100% tinh thần võ đạo, giúp học viên tiến bộ nhanh hơn 40% so với việc tự mày mò qua video. Chúng tôi không chỉ hướng đến việc thuộc bài quyền, mà còn đào tạo để học viên ứng dụng sự linh hoạt, phản xạ vào sức khỏe và kỷ luật trong cuộc sống.",
     },
     {
       id: 3,
       title: "Đội ngũ Giảng viên",
       highlight: "chuyên môn cao",
       description:
-        "Các HLV tại CLB đều là những người có thâm niên, có bề dày thành tích tại các giải võ thuật và kinh nghiệm giảng dạy thực tế nhiều năm. Chương trình đào tạo được cá nhân hóa theo trình độ từng người, đảm bảo hỗ trợ đúng trọng tâm, đặc biệt nâng cao khả năng cảm nhận côn và sự linh hoạt của cổ tay.",
+        "Các HLV tại Võ đường đều là những người có thâm niên, có bề dày thành tích tại các giải võ thuật và kinh nghiệm giảng dạy thực tế nhiều năm. Chương trình đào tạo được cá nhân hóa theo trình độ từng người, đảm bảo hỗ trợ đúng trọng tâm, đặc biệt nâng cao khả năng cảm nhận côn và sự linh hoạt của cổ tay.",
     },
     {
       id: 4,
       title: "Ứng dụng",
       highlight: "công nghệ",
       description:
-        "CLB tiên phong ứng dụng các video bài giảng chất lượng cao giúp học viên tự luyện tập tại nhà. Hệ thống theo dõi quá trình tập luyện và đưa ra lời khuyên chỉnh sửa tư thế chi tiết theo chuẩn kỹ thuật biểu diễn quốc tế. Sử dụng nền tảng nhóm kín để hỗ trợ giải đáp thắc mắc mọi lúc, mọi nơi.",
+        "Võ đường tiên phong ứng dụng các video bài giảng chất lượng cao giúp học viên tự luyện tập tại nhà. Hệ thống theo dõi quá trình tập luyện và đưa ra lời khuyên chỉnh sửa tư thế chi tiết theo chuẩn kỹ thuật biểu diễn quốc tế. Sử dụng nền tảng nhóm kín để hỗ trợ giải đáp thắc mắc mọi lúc, mọi nơi.",
     },
     {
       id: 5,
       title: "Mô hình giảng dạy",
       highlight: "kết hợp, toàn diện",
       description:
-        "Kết hợp giữa đội ngũ HLV kỳ cựu giúp xây dựng nền tảng bộ pháp vững chắc cùng các bài tập hiện đại giúp nâng cao cảm giác côn. Đồng thời, CLB triển khai các hoạt động giao lưu, offline và biểu diễn thực tế xuyên suốt lộ trình để học viên phát triển toàn diện cả kỹ năng và bản lĩnh.",
+        "Kết hợp giữa đội ngũ HLV kỳ cựu giúp xây dựng nền tảng bộ pháp vững chắc cùng các bài tập hiện đại giúp nâng cao cảm giác côn. Đồng thời, Võ đường triển khai các hoạt động giao lưu, offline và biểu diễn thực tế xuyên suốt lộ trình để học viên phát triển toàn diện cả kỹ năng và bản lĩnh.",
     },
     {
       id: 6,
@@ -70,7 +70,7 @@ const Benefits: React.FC = () => {
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         const benefitId = parseInt(
-          entry.target.getAttribute("data-benefit-id") || "0"
+          entry.target.getAttribute("data-benefit-id") || "0",
         );
 
         if (entry.isIntersecting) {
@@ -89,7 +89,7 @@ const Benefits: React.FC = () => {
 
     const observer = new IntersectionObserver(
       observerCallback,
-      observerOptions
+      observerOptions,
     );
 
     benefitsRef.current.forEach((ref) => {

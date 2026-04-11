@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import styles from './Footer.module.css';
+import { motion } from "framer-motion";
+import Image from "next/image";
+import styles from "./Footer.module.css";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     about: [
-      { label: 'Giới thiệu', href: '#about' },
-      { label: 'Huấn luyện viên', href: '#coaches' },
-      { label: 'Thành tích', href: '#achievements' },
+      { label: "Giới thiệu", href: "#about" },
+      { label: "Huấn luyện viên", href: "#coaches" },
+      { label: "Thành tích", href: "#achievements" },
     ],
     courses: [
-      { label: 'Khóa cơ bản', href: '#courses' },
-      { label: 'Khóa nâng cao', href: '#courses' },
-      { label: 'Chuyên nghiệp', href: '#courses' },
+      { label: "Khóa cơ bản", href: "#courses" },
+      { label: "Khóa nâng cao", href: "#courses" },
+      { label: "Chuyên nghiệp", href: "#courses" },
     ],
     contact: [
-      { label: 'Liên hệ', href: '#contact' },
-      { label: 'Đăng ký', href: '#contact' },
-      { label: 'FAQ', href: '#' },
+      { label: "Liên hệ", href: "#contact" },
+      { label: "Đăng ký", href: "#contact" },
+      { label: "FAQ", href: "#" },
     ],
   };
 
@@ -38,9 +38,9 @@ export default function Footer() {
               transition={{ duration: 0.6 }}
             >
               <div className={styles.brandLogo}>
-                <Image 
-                  src="/images/logo.png" 
-                  alt="CLB Côn Nhị Khúc Hà Đông"
+                <Image
+                  src="/images/logo.png"
+                  alt="Võ đường Côn Nhị Khúc Hà Đông"
                   width={80}
                   height={80}
                   className={styles.logoImage}
@@ -51,9 +51,13 @@ export default function Footer() {
                 </div>
               </div>
               <p className={styles.brandDescription}>
-                CLB rèn luyện thể chất và tinh thần qua côn nhị khúc nghệ thuật. 
-                Tôn chỉ "Nhân - Chí - Dũng": sống nhân hậu, nuôi ch지 bền, hành động dũng cảm. 
-                Cơ sở Hà Đông <strong style={{ color: 'var(--color-secondary)' }}>MIỄN PHÍ</strong> cho mọi người!
+                Võ đường rèn luyện thể chất và tinh thần qua côn nhị khúc nghệ
+                thuật. Tôn chỉ "Nhân - Chí - Dũng": sống nhân hậu, nuôi ch지
+                bền, hành động dũng cảm. Cơ sở Hà Đông{" "}
+                <strong style={{ color: "var(--color-secondary)" }}>
+                  MIỄN PHÍ
+                </strong>{" "}
+                cho mọi người!
               </p>
               <div className={styles.socialLinks}>
                 <motion.a
@@ -158,7 +162,8 @@ export default function Footer() {
         <div className="container">
           <div className={styles.footerBottomContent}>
             <p className={styles.copyright}>
-              © {currentYear} Câu lạc bộ Côn Nhị Khúc Hà Đông. All rights reserved.
+              © {currentYear} Võ đường Côn Nhị Khúc Hà Đông. All rights
+              reserved.
             </p>
             <div className={styles.footerBottomLinks}>
               <a href="#">Chính sách bảo mật</a>
@@ -179,7 +184,7 @@ export default function Footer() {
           transition={{
             duration: 20,
             repeat: Infinity,
-            ease: 'linear',
+            ease: "linear",
           }}
         />
       </div>

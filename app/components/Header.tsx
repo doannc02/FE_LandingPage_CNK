@@ -33,7 +33,7 @@ export default function Header() {
       scrollTimeoutRef.current = setTimeout(() => {
         const shouldBeScrolled = currentScrollY > 50;
         setIsScrolled((prev) =>
-          prev !== shouldBeScrolled ? shouldBeScrolled : prev
+          prev !== shouldBeScrolled ? shouldBeScrolled : prev,
         );
       }, 10);
     };
@@ -94,11 +94,15 @@ export default function Header() {
   const isItemActive = useCallback(
     (href: string) => {
       if (currentHash === href) return true;
-      if (!currentHash && href === "#home" && (pathname === "/" || pathname === ""))
+      if (
+        !currentHash &&
+        href === "#home" &&
+        (pathname === "/" || pathname === "")
+      )
         return true;
       return false;
     },
-    [currentHash, pathname]
+    [currentHash, pathname],
   );
 
   const handleNavClick = useCallback(
@@ -130,7 +134,7 @@ export default function Header() {
         }, 100);
       }
     },
-    [pathname, router]
+    [pathname, router],
   );
 
   const toggleMobileMenu = useCallback(() => {
@@ -174,7 +178,7 @@ export default function Header() {
           >
             <Image
               src="/images/logo.png"
-              alt="CLB Côn Nhị Khúc Hà Đông"
+              alt="Võ đường Côn Nhị Khúc Hà Đông"
               width={50}
               height={50}
               className={styles.logoImage}
@@ -197,7 +201,11 @@ export default function Header() {
                 className={`${styles.navLink} ${isItemActive(item.href) ? styles.active : ""}`}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration: 0.3,
+                  delay: index * 0.05,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={(e) => handleNavClick(e, item.href)}
@@ -264,8 +272,12 @@ export default function Header() {
                       {getInitials(user.fullName)}
                     </span>
                   )}
-                  <span className={styles.userName}>{user.fullName.split(" ").pop()}</span>
-                  <ChevronDownIcon className={`${styles.chevron} ${isUserMenuOpen ? styles.chevronOpen : ""}`} />
+                  <span className={styles.userName}>
+                    {user.fullName.split(" ").pop()}
+                  </span>
+                  <ChevronDownIcon
+                    className={`${styles.chevron} ${isUserMenuOpen ? styles.chevronOpen : ""}`}
+                  />
                 </button>
 
                 <AnimatePresence>
@@ -285,7 +297,8 @@ export default function Header() {
                         </span>
                       </div>
                       <div className={styles.dropdownDivider} />
-                      {(user.role === "SuperAdmin" || user.role === "SubAdmin") && (
+                      {(user.role === "SuperAdmin" ||
+                        user.role === "SubAdmin") && (
                         <Link
                           href="/admin/dashboard"
                           className={styles.dropdownItem}
@@ -347,7 +360,18 @@ function roleLabel(role: string) {
 
 function ChevronDownIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width="14"
+      height="14"
+    >
       <polyline points="6 9 12 15 18 9" />
     </svg>
   );
@@ -355,7 +379,17 @@ function ChevronDownIcon({ className }: { className?: string }) {
 
 function DashboardIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width="15"
+      height="15"
+    >
       <rect x="3" y="3" width="7" height="7" />
       <rect x="14" y="3" width="7" height="7" />
       <rect x="14" y="14" width="7" height="7" />
@@ -366,7 +400,17 @@ function DashboardIcon() {
 
 function LogoutIcon() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width="15"
+      height="15"
+    >
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
       <polyline points="16 17 21 12 16 7" />
       <line x1="21" y1="12" x2="9" y2="12" />

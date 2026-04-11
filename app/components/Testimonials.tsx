@@ -17,7 +17,7 @@ const Testimonials: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const testimonialsRef = useRef<(HTMLDivElement | null)[]>([]);
   const [visibleTestimonials, setVisibleTestimonials] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
 
   const testimonials: Testimonial[] = [
@@ -29,7 +29,7 @@ const Testimonials: React.FC = () => {
       date: "15 Tháng 11, 2024",
       rating: 5,
       content:
-        "Trước khi học côn nhị khúc ở CLB mình gần như mất gốc hoàn toàn, đặc biệt là kỹ thuật xoay côn. Mình học ở đây 2 tháng và điều mình thích nhất ở đây là không khí lớp học rất thân thiện, hiếu khách. Lớp đầu học với thầy Hùng, thầy tạo cảm giác thoải mái, hướng dẫn tận tình nên mình không còn sợ rớt côn nữa. Thầy luôn động viên và chỉnh sửa từng động tác chi tiết.",
+        "Trước khi học côn nhị khúc ở Võ đường mình gần như mất gốc hoàn toàn, đặc biệt là kỹ thuật xoay côn. Mình học ở đây 2 tháng và điều mình thích nhất ở đây là không khí lớp học rất thân thiện, hiếu khách. Lớp đầu học với thầy Hùng, thầy tạo cảm giác thoải mái, hướng dẫn tận tình nên mình không còn sợ rớt côn nữa. Thầy luôn động viên và chỉnh sửa từng động tác chi tiết.",
       source: "Google",
       sourceLink: "#",
     },
@@ -41,7 +41,7 @@ const Testimonials: React.FC = () => {
       date: "28 Tháng 10, 2024",
       rating: 5,
       content:
-        "Con mình học côn nhị khúc tại CLB và mình rất hài lòng. Con tiến bộ rõ rệt, đặc biệt là sự tự tin khi biểu diễn trước đám đông. Giáo viên tận tâm, chăm bài kỹ, môi trường học tích cực và không áp lực. Là phụ huynh, mình cảm thấy yên tâm khi cho con học tại đây. Đội ngũ HLV rất chuyên nghiệp và quan tâm đến từng học viên.",
+        "Con mình học côn nhị khúc tại Võ đường và mình rất hài lòng. Con tiến bộ rõ rệt, đặc biệt là sự tự tin khi biểu diễn trước đám đông. Giáo viên tận tâm, chăm bài kỹ, môi trường học tích cực và không áp lực. Là phụ huynh, mình cảm thấy yên tâm khi cho con học tại đây. Đội ngũ HLV rất chuyên nghiệp và quan tâm đến từng học viên.",
       source: "Google",
       sourceLink: "#",
     },
@@ -53,7 +53,7 @@ const Testimonials: React.FC = () => {
       date: "10 Tháng 11, 2024",
       rating: 5,
       content:
-        "Mình đã hoàn thành khóa IELTS Level 2 ở CLB Côn nhị khúc. Mình trước giờ chỉ tự học ở nhà cho đến khi tìm được CLB, mình thấy rất biết ơn vì đã được là 1 phần của lớp thầy Linh. Từ học đội hình sẽ hơi lost và khó khăn vì không có người hướng dẫn, đáp ý và sửa lỗi sai cho mình nên khi được học ở đây mình tiến bộ rất nhiều.",
+        "Mình đã hoàn thành khóa IELTS Level 2 ở Võ đường Côn nhị khúc. Mình trước giờ chỉ tự học ở nhà cho đến khi tìm được Võ đường, mình thấy rất biết ơn vì đã được là 1 phần của lớp thầy Linh. Từ học đội hình sẽ hơi lost và khó khăn vì không có người hướng dẫn, đáp ý và sửa lỗi sai cho mình nên khi được học ở đây mình tiến bộ rất nhiều.",
       source: "Facebook",
       sourceLink: "#",
     },
@@ -65,7 +65,7 @@ const Testimonials: React.FC = () => {
       date: "05 Tháng 11, 2024",
       rating: 5,
       content:
-        "Chắc có nhiều bạn ở đây là sinh viên giống mình, muốn học tiếng võ thuật để lôi bóng ra trường. Rất biết ơn vì tìm được CLB Level 2 ở Hà Đông. Mình thi khum cần nhiều, chỉ cần 6.5 là đủ rồi, sau 3 tháng mình cũng đạt được level mình mong muốn. Cảm ơn thầy Sơn và các bạn cùng lớp nhiều. Thầy rất tận tâm và kiên nhẫn trong việc hướng dẫn.",
+        "Chắc có nhiều bạn ở đây là sinh viên giống mình, muốn học tiếng võ thuật để lôi bóng ra trường. Rất biết ơn vì tìm được Võ đường Level 2 ở Hà Đông. Mình thi khum cần nhiều, chỉ cần 6.5 là đủ rồi, sau 3 tháng mình cũng đạt được level mình mong muốn. Cảm ơn thầy Sơn và các bạn cùng lớp nhiều. Thầy rất tận tâm và kiên nhẫn trong việc hướng dẫn.",
       source: "Facebook",
       sourceLink: "#",
     },
@@ -89,7 +89,7 @@ const Testimonials: React.FC = () => {
       date: "25 Tháng 10, 2024",
       rating: 5,
       content:
-        "Mình học khóa Level 2 ở CLB Côn nhị khúc Hà Đông mấy tháng nay thấy tiến bộ rõ rệt, từ 6.0 lên 7.0 khá nhanh. Thầy có cô người từng chấm thi thật cho British Council và IDP, nên sửa lỗi chuẩn, hiệu ngay vấn đề. Giáo trình ngắn gọn, tập trung đúng phần hay ra thi, không lan man. Mình thích cách học ở đây vì thực chiến và hiệu quả.",
+        "Mình học khóa Level 2 ở Võ đường Côn nhị khúc Hà Đông mấy tháng nay thấy tiến bộ rõ rệt, từ 6.0 lên 7.0 khá nhanh. Thầy có cô người từng chấm thi thật cho British Council và IDP, nên sửa lỗi chuẩn, hiệu ngay vấn đề. Giáo trình ngắn gọn, tập trung đúng phần hay ra thi, không lan man. Mình thích cách học ở đây vì thực chiến và hiệu quả.",
       source: "Google",
       sourceLink: "#",
     },
@@ -105,7 +105,7 @@ const Testimonials: React.FC = () => {
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         const testimonialId = parseInt(
-          entry.target.getAttribute("data-testimonial-id") || "0"
+          entry.target.getAttribute("data-testimonial-id") || "0",
         );
 
         if (entry.isIntersecting) {
@@ -122,7 +122,7 @@ const Testimonials: React.FC = () => {
 
     const observer = new IntersectionObserver(
       observerCallback,
-      observerOptions
+      observerOptions,
     );
 
     testimonialsRef.current.forEach((ref) => {
@@ -208,8 +208,8 @@ const Testimonials: React.FC = () => {
             Học viên nói gì về Côn nhị khúc Hà Đông
           </h2>
           <p className={styles.sectionDescription}>
-            Lắng nghe những chia sẻ về trải nghiệm học tập tại CLB của các học
-            viên.
+            Lắng nghe những chia sẻ về trải nghiệm học tập tại Võ đường của các
+            học viên.
           </p>
         </div>
 

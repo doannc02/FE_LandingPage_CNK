@@ -1,4 +1,4 @@
-# robots.txt for Câu lạc bộ Côn Nhị Khúc Hà Đông
+# robots.txt for Võ đường Côn Nhị Khúc Hà Đông
 # https://www.robotstxt.org/robotstxt.html
 
 User-agent: *

@@ -1,7 +1,7 @@
 {
-  "name": "Câu lạc bộ Côn Nhị Khúc Hà Đông",
-  "short_name": "CLB CNK Hà Đông",
-  "description": "Câu lạc bộ Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
+  "name": "Võ đường Côn Nhị Khúc Hà Đông",
+  "short_name": "Võ đường CNK Hà Đông",
+  "description": "Võ đường Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
@@ -21,7 +21,10 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["sports", "lifestyle"],
+  "categories": [
+    "sports",
+    "lifestyle"
+  ],
   "lang": "vi-VN",
   "dir": "ltr"
 }

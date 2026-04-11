@@ -17,7 +17,7 @@ const SocialRegistration: React.FC = () => {
   const [isCardVisible, setIsCardVisible] = useState(false);
   const [isBottomVisible, setIsBottomVisible] = useState(false);
   const [visibleChannels, setVisibleChannels] = useState<Set<number>>(
-    new Set()
+    new Set(),
   );
 
   const contactChannels: ContactChannel[] = [
@@ -142,7 +142,7 @@ const SocialRegistration: React.FC = () => {
     const channelsObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         const channelIndex = parseInt(
-          entry.target.getAttribute("data-channel-index") || "0"
+          entry.target.getAttribute("data-channel-index") || "0",
         );
 
         if (entry.isIntersecting) {
@@ -307,17 +307,17 @@ const SocialRegistration: React.FC = () => {
             <p>
               Côn nhị khúc Hà Đông tự hào là trung tâm võ thuật hàng đầu, mang
               đến cho học viên một môi trường học tập chuyên nghiệp, thân thiện
-              và hiệu quả. Với bề dày kinh nghiệm, CLB không chỉ là trung tâm
-              luyện thi võ thuật uy tín mà còn là nơi đây võ thuật đạt chuẩn
-              quốc tế. CLB cam kết xây dựng trung tâm học võ thuật với chất
+              và hiệu quả. Với bề dày kinh nghiệm, Võ đường không chỉ là trung
+              tâm luyện thi võ thuật uy tín mà còn là nơi đây võ thuật đạt chuẩn
+              quốc tế. Võ đường cam kết xây dựng trung tâm học võ thuật với chất
               lượng đào tạo vượt trội, đáp ứng nhu cầu đa dạng của học viên.
             </p>
             <p>
               Tọa lạc tại địa chỉ chi học võ thuật thuận tiện tại trung tâm Hà
-              Đông, CLB tạo điều kiện tốt nhất cho việc học tập và phát triển kỹ
-              năng. Với những ai đang tìm kiếm địa chỉ luyện võ thuật chất
-              lượng, CLB chính là sự lựa chọn hoàn hảo, đồng hành cùng bạn trên
-              hành trình chinh phục mục tiêu võ thuật mong muốn.
+              Đông, Võ đường tạo điều kiện tốt nhất cho việc học tập và phát
+              triển kỹ năng. Với những ai đang tìm kiếm địa chỉ luyện võ thuật
+              chất lượng, Võ đường chính là sự lựa chọn hoàn hảo, đồng hành cùng
+              bạn trên hành trình chinh phục mục tiêu võ thuật mong muốn.
             </p>
           </div>
         </div>

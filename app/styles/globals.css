@@ -5,16 +5,16 @@
 
 /* Định nghĩa custom tokens — dùng cho class bg-brand, text-brand, v.v. */
 @theme {
-  --color-brand:       #dc2626;
+  --color-brand: #dc2626;
   --color-brand-light: #ef4444;
-  --color-brand-dark:  #991b1b;
+  --color-brand-dark: #991b1b;
 }
 
 /* Dark mode dùng prefers-color-scheme (không cần class .dark) */
 @variant dark (@media (prefers-color-scheme: dark));
 
 /* ================================================
-   MODERN DESIGN SYSTEM - CLB CÔN NHỊ KHÚC HÀ ĐÔNG
+   MODERN DESIGN SYSTEM - Võ đường CÔN NHỊ KHÚC HÀ ĐÔNG
    Inspired by KTDC Group - Clean, Professional Design
    ================================================ */
 
@@ -62,10 +62,10 @@
   --gradient-hero: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
 
   /* Typography */
-  --font-display: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont,
-    sans-serif;
-  --font-body: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont,
-    sans-serif;
+  --font-display:
+    "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body:
+    "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Font Weights */
   --font-weight-normal: 400;
@@ -112,10 +112,10 @@
   --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
-    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);

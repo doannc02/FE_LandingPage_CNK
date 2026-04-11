@@ -1,6 +1,6 @@
-# Landing Page Câu lạc bộ Côn Nhị Khúc Hà Đông
+# Landing Page Võ đường Côn Nhị Khúc Hà Đông
 
-Landing page hiện đại, responsive được xây dựng với Next.js 14, TypeScript, và Framer Motion cho câu lạc bộ võ thuật Côn Nhị Khúc Hà Đông.
+Landing page hiện đại, responsive được xây dựng với Next.js 14, TypeScript, và Framer Motion cho võ đường võ thuật Côn Nhị Khúc Hà Đông.
 
 ## ✨ Tính năng
 
@@ -14,17 +14,20 @@ Landing page hiện đại, responsive được xây dựng với Next.js 14, Ty
 ## 🚀 Cài đặt
 
 ### Yêu cầu
+
 - Node.js 18.17 trở lên
 - npm hoặc yarn
 
 ### Các bước cài đặt
 
 1. Clone repository hoặc tải source code
+
 ```bash
 cd nunchaku-hadong-landing
 ```
 
 2. Cài đặt dependencies
+
 ```bash
 npm install
 # hoặc
@@ -32,6 +35,7 @@ yarn install
 ```
 
 3. Chạy development server
+
 ```bash
 npm run dev
 # hoặc
@@ -77,7 +81,7 @@ Landing page bao gồm các sections:
 
 1. **Header**: Navigation với sticky header và mobile menu
 2. **Hero**: Banner chính với call-to-action
-3. **About**: Giới thiệu về câu lạc bộ
+3. **About**: Giới thiệu về võ đường
 4. **Courses**: Các khóa học với pricing cards
 5. **Contact**: Form liên hệ và thông tin
 6. **Footer**: Links và thông tin bổ sung
@@ -90,9 +94,9 @@ Chỉnh sửa CSS variables trong `app/styles/globals.css`:
 
 ```css
 :root {
-  --color-primary: #C41E3A;      /* Đỏ chủ đạo */
-  --color-secondary: #D4AF37;    /* Vàng gold */
-  --color-dark: #0A0A0A;         /* Đen background */
+  --color-primary: #c41e3a; /* Đỏ chủ đạo */
+  --color-secondary: #d4af37; /* Vàng gold */
+  --color-dark: #0a0a0a; /* Đen background */
   /* ... */
 }
 ```
@@ -100,8 +104,9 @@ Chỉnh sửa CSS variables trong `app/styles/globals.css`:
 ### Nội dung
 
 Chỉnh sửa nội dung trong các component files:
+
 - `app/components/Hero.tsx` - Banner và stats
-- `app/components/About.tsx` - Thông tin CLB
+- `app/components/About.tsx` - Thông tin Võ đường
 - `app/components/Courses.tsx` - Khóa học và giá
 - `app/components/Contact.tsx` - Thông tin liên hệ
 
@@ -156,11 +161,12 @@ Private project - All rights reserved
 
 ## 📞 Liên hệ
 
-Câu lạc bộ Côn Nhị Khúc Hà Đông
+Võ đường Côn Nhị Khúc Hà Đông
+
 - Email: contact@connhikhuchadong.vn
 - Phone: 0123 456 789
 - Address: Quận Hà Đông, Hà Nội
 
 ---
 
-Made with ❤️ for Câu lạc bộ Côn Nhị Khúc Hà Đông
+Made with ❤️ for Võ đường Côn Nhị Khúc Hà Đông

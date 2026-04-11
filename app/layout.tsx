@@ -6,11 +6,11 @@ import BubbleChat from "./components/Chat/BubbleChat";
 
 export const metadata: Metadata = {
   title: {
-    default: "Câu lạc bộ Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
-    template: "%s | CLB Côn Nhị Khúc Hà Đông",
+    default: "Võ đường Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
+    template: "%s | Võ đường Côn Nhị Khúc Hà Đông",
   },
   description:
-    "CÔN NHỊ KHÚC HÀ ĐÔNG – CLB rèn luyện thể chất và tinh thần qua côn nhị khúc nghệ thuật, theo tôn chỉ “Nhân – Chí – Dũng”: sống nhân hậu, nuôi chí bền, hành động dũng cảm. Cơ sở Hà Đông miễn phí cho mọi người, cùng lan tỏa đam mê và năng lượng tích cực!",
+    "CÔN NHỊ KHÚC HÀ ĐÔNG – Võ đường rèn luyện thể chất và tinh thần qua côn nhị khúc nghệ thuật, theo tôn chỉ “Nhân – Chí – Dũng”: sống nhân hậu, nuôi chí bền, hành động dũng cảm. Cơ sở Hà Đông miễn phí cho mọi người, cùng lan tỏa đam mê và năng lượng tích cực!",
   keywords: [
     "tấn pháp",
     "pháp luật võ thuật",
@@ -20,16 +20,16 @@ export const metadata: Metadata = {
     "nunchaku",
     "võ thuật",
     "hà đông",
-    "câu lạc bộ võ thuật",
+    "võ đường võ thuật",
     "martial arts",
     "võ cổ truyền",
     "tự vệ",
     "luyện tập võ",
     "dạy võ hà nội",
   ],
-  authors: [{ name: "CLB Côn Nhị Khúc Hà Đông" }],
-  creator: "CLB Côn Nhị Khúc Hà Đông",
-  publisher: "CLB Côn Nhị Khúc Hà Đông",
+  authors: [{ name: "Võ đường Côn Nhị Khúc Hà Đông" }],
+  creator: "Võ đường Côn Nhị Khúc Hà Đông",
+  publisher: "Võ đường Côn Nhị Khúc Hà Đông",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://localhost:52040",
   ),
@@ -37,25 +37,25 @@ export const metadata: Metadata = {
     canonical: "https://www.dangcapnc.io.vn/",
   },
   openGraph: {
-    title: "Câu lạc bộ Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
+    title: "Võ đường Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
     description:
       "Nơi rèn luyện tinh thần chiến binh, khơi nguồn sức mạnh nội tại. Đào tạo côn nhị khúc chuyên nghiệp từ cơ bản đến nâng cao tại Hà Đông, Hà Nội.",
     type: "website",
     locale: "vi_VN",
     url: "https://localhost:52040",
-    siteName: "CLB Côn Nhị Khúc Hà Đông",
+    siteName: "Võ đường Côn Nhị Khúc Hà Đông",
     images: [
       {
         url: "/images/banner.png",
         width: 1200,
         height: 630,
-        alt: "Câu lạc bộ Côn Nhị Khúc Hà Đông",
+        alt: "Võ đường Côn Nhị Khúc Hà Đông",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Câu lạc bộ Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
+    title: "Võ đường Côn Nhị Khúc Hà Đông - Đào tạo võ thuật chuyên nghiệp",
     description:
       "Nơi rèn luyện tinh thần chiến binh, đào tạo côn nhị khúc chuyên nghiệp tại Hà Đông, Hà Nội",
     images: ["/images/banner.png"],
@@ -98,8 +98,8 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "SportsClub",
     "@id": `${siteUrl}/#organization`,
-    name: "Câu lạc bộ Côn Nhị Khúc Hà Đông",
-    alternateName: "CLB Nunchaku Hà Đông",
+    name: "Võ đường Côn Nhị Khúc Hà Đông",
+    alternateName: "Võ đường Nunchaku Hà Đông",
     url: siteUrl,
     logo: {
       "@type": "ImageObject",
@@ -109,7 +109,7 @@ export default function RootLayout({
     },
     image: `${siteUrl}/images/banner.png`,
     description:
-      "Câu lạc bộ Côn Nhị Khúc Hà Đông - Nơi rèn luyện tinh thần chiến binh, đào tạo võ thuật chuyên nghiệp",
+      "Võ đường Côn Nhị Khúc Hà Đông - Nơi rèn luyện tinh thần chiến binh, đào tạo võ thuật chuyên nghiệp",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Hà Đông",
@@ -140,7 +140,7 @@ export default function RootLayout({
     "@type": "WebSite",
     "@id": `${siteUrl}/#website`,
     url: siteUrl,
-    name: "Câu lạc bộ Côn Nhị Khúc Hà Đông",
+    name: "Võ đường Côn Nhị Khúc Hà Đông",
     description: "Đào tạo võ thuật côn nhị khúc chuyên nghiệp",
     publisher: {
       "@id": `${siteUrl}/#organization`,

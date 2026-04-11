@@ -351,7 +351,7 @@ export default function News() {
               fontFamily: "'DM Sans', sans-serif",
             }}
           >
-            Cập nhật {totalCount} bài viết về hoạt động của câu lạc bộ
+            Cập nhật {totalCount} bài viết về hoạt động của võ đường
           </p>
         </motion.div>
 
