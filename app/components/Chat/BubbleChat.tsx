@@ -272,7 +272,9 @@ function MessageList({
 
   if (messages.length === 0 && !isLoading) {
     return (
-      <div className={`flex-1 overflow-y-auto bg-[#F9FAFB] ${scrollbarClasses}`}>
+      <div
+        className={`flex-1 overflow-y-auto bg-[#F9FAFB] ${scrollbarClasses}`}
+      >
         <div className="h-full flex flex-col items-center justify-center text-center px-6 py-8 space-y-4">
           <div className="relative">
             <div
@@ -539,8 +541,7 @@ const ChatWindow = memo(function ChatWindow({
   // Mobile: full-screen slide lên từ dưới
   const desktopClass =
     "fixed bottom-[90px] right-6 z-[9998] w-[360px] h-[560px] flex flex-col rounded-2xl overflow-clip shadow-2xl border border-gray-100 bg-white";
-  const mobileClass =
-    "fixed inset-0 z-[9998] flex flex-col bg-white";
+  const mobileClass = "fixed inset-0 z-[9998] flex flex-col bg-white";
 
   const desktopVariants = {
     initial: { opacity: 0, scale: 0.9, y: 20 },
@@ -578,7 +579,7 @@ const ChatWindow = memo(function ChatWindow({
       />
       <MessageList messages={messages} isLoading={isLoading} />
 
-      <StatusBanner chatMode={chatMode} />
+      {/* <StatusBanner chatMode={chatMode} /> */}
 
       {/* Footer */}
       <div
@@ -849,7 +850,8 @@ export default function BubbleChat() {
       {
         id: genId(),
         role: "system" as const,
-        content: "Phiên chat với admin đã kết thúc. Bạn có thể tiếp tục hỏi bot.",
+        content:
+          "Phiên chat với admin đã kết thúc. Bạn có thể tiếp tục hỏi bot.",
         timestamp: new Date(),
       },
     ]);
@@ -863,15 +865,17 @@ export default function BubbleChat() {
       try {
         const res = await chatApi.getHistory(sessionId);
         const hist: ChatHistoryResponse | undefined = res.data?.data;
-        if (!hist || hist.status === "None" || hist.messages.length === 0) return;
+        if (!hist || hist.status === "None" || hist.messages.length === 0)
+          return;
 
         setMessages(
           hist.messages.map((m) => ({
             id: m.id,
-            role: m.role === "User" ? ("user" as const) : ("assistant" as const),
+            role:
+              m.role === "User" ? ("user" as const) : ("assistant" as const),
             content: m.content,
             timestamp: new Date(m.createdAt),
-          }))
+          })),
         );
 
         if (hist.status === "HumanHandoff") {
@@ -953,13 +957,6 @@ export default function BubbleChat() {
         } else if (data.type === "HumanOnline" && data.chatRoomId) {
           setChatRoomId(data.chatRoomId);
           setChatMode("HumanOnline");
-          const sysMsg: Message = {
-            id: genId(),
-            role: "system",
-            content: "Đã kết nối với admin — bạn có thể tiếp tục nhắn tin.",
-            timestamp: new Date(),
-          };
-          setMessages((prev) => [...prev, sysMsg]);
         } else if (data.type === "LeftMessage") {
           setChatMode("LeftMessage");
           const sysMsg: Message = {

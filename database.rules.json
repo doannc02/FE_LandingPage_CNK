@@ -1,0 +1,57 @@
+{
+  "rules": {
+
+    // ── Realtime chat rooms (HumanOnline flow) ─────────────────────────────
+    "chats": {
+      "$chatId": {
+        "metadata": {
+          ".read": true,
+          ".write": "auth != null"
+        },
+        "messages": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+
+    // ── Notifications (LeftMessage flow — admin reply đến user) ────────────
+    "notifications": {
+      "$sessionId": {
+        ".read": true,
+        ".write": "auth != null && (auth.token.role === 'SuperAdmin' || auth.token.role === 'SubAdmin')"
+      }
+    },
+
+    // ── Presence (online/offline status của admin) ─────────────────────────
+    "presence": {
+      "admins": {
+        "$uid": {
+          ".read": true,
+          ".write": "auth != null && auth.uid === $uid && (auth.token.role === 'SuperAdmin' || auth.token.role === 'SubAdmin')"
+        }
+      }
+    },
+
+    // ── Pending Messages (chờ admin phản hồi) ─────────────────────────────
+    "pendingMessages": {
+      ".read":  "auth != null && (auth.token.role === 'SuperAdmin' || auth.token.role === 'SubAdmin')",
+      ".write": "auth != null && (auth.token.role === 'SuperAdmin' || auth.token.role === 'SubAdmin')"
+    },
+
+    // ── Profiles người dùng ────────────────────────────────────────────────
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || auth.token.role === 'SuperAdmin' || auth.token.role === 'SubAdmin')",
+        ".write": "auth != null && auth.uid === $uid",
+        "role": {
+          ".write": "false"
+        }
+      }
+    },
+
+    // ── Mặc định: từ chối tất cả ──────────────────────────────────────────
+    ".read":  "false",
+    ".write": "false"
+  }
+}

@@ -4,7 +4,10 @@
       "Bash(mkdir -p \"D:/WORKS/LandingPage/FE_LandingPage_CNK/app/components/Chat\")",
       "Bash(mkdir -p \"D:/WORKS/LandingPage/FE_LandingPage_CNK/app/api/chat\")",
       "Bash(npx tsc:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(xargs wc:*)",
+      "Bash(npx next:*)",
+      "Bash(cmd:*)"
     ]
   }
 }

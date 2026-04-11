@@ -12,6 +12,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithCustomToken,
   signOut,
 } from "firebase/auth";
 import { initializeApp, getApps } from "firebase/app";
@@ -49,6 +50,22 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+// ── Firebase helpers ───────────────────────────────────────────────────────
+
+/** Sign into Firebase RTDB với custom token từ backend.
+ *  Dùng cho admin (email login) để RTDB rules nhận biết auth.uid và auth.token.role.
+ *  Non-critical: lỗi chỉ log warning, không block login flow. */
+async function signInToFirebaseAsAdmin() {
+  try {
+    const res = await authApi.getFirebaseToken();
+    if (!res.isSuccess || !res.data?.token) return;
+    const auth = getFirebaseAuth();
+    await signInWithCustomToken(auth, res.data.token);
+  } catch (e) {
+    console.warn("[Auth] Firebase custom token sign-in failed:", e);
+  }
+}
 
 // ── Firebase singleton ─────────────────────────────────────────────────────
 function isFirebaseConfigured(): boolean {
@@ -110,14 +127,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const result = await authApi.login({ email, password });
         if (result.isSuccess && result.data) {
+          const role = result.data.user.role as UserRole;
           saveUser({
             id: result.data.user.id,
             email: result.data.user.email,
             username: result.data.user.username,
             fullName: result.data.user.fullName,
-            role: result.data.user.role as UserRole,
+            role,
             avatarUrl: result.data.user.avatarUrl,
           });
+          // Sign into Firebase so RTDB rules see auth.uid and auth.token.role
+          if (role === "SuperAdmin" || role === "SubAdmin") {
+            signInToFirebaseAsAdmin();
+          }
           return { isSuccess: true };
         }
         const msg = result.error ?? "Email hoặc mật khẩu không đúng";
@@ -154,14 +176,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!result.isSuccess || !result.data) {
         throw new Error(result.error ?? "Xác thực Google thất bại");
       }
+      const role = result.data.user.role as UserRole;
       saveUser({
         id: result.data.user.id,
         email: result.data.user.email,
         username: result.data.user.username,
         fullName: result.data.user.fullName,
-        role: result.data.user.role as UserRole,
+        role,
         avatarUrl: result.data.user.avatarUrl,
       });
+      // Replace Google Firebase session with custom token so RTDB rules
+      // see auth.uid = backend UUID and auth.token.role for admin writes
+      if (role === "SuperAdmin" || role === "SubAdmin") {
+        signInToFirebaseAsAdmin();
+      }
       return { isSuccess: true };
     } catch (err) {
       const msg =

@@ -93,6 +93,19 @@ export const authApi = {
     return response.data;
   },
 
+  /** Lấy Firebase custom token để sign vào Firebase RTDB (chỉ dành cho admin).
+   *  Backend tạo token với UID = backend UUID và custom claim role. */
+  getFirebaseToken: async (): Promise<ApiResponse<{ token: string }>> => {
+    try {
+      const response = await apiClient.post<ApiResponse<{ token: string }>>('/admin/firebase-token');
+      return response.data;
+    } catch (err: unknown) {
+      const errData = extractErrorResponse<{ token: string }>(err);
+      if (errData) return errData;
+      throw err;
+    }
+  },
+
   logout: () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
