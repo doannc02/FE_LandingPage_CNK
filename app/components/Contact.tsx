@@ -180,9 +180,9 @@ export default function Contact() {
               >
                 <span className={styles.infoIcon}>📱</span>
                 <div className={styles.infoContent}>
-                  <h4>Hotline</h4>
-                  <p>0123 456 789</p>
-                  <p>0987 654 321</p>
+                  <h4>Zalo / Hotline</h4>
+                  <p>VS Nguyễn Văn Chất: <strong>0868.699.860</strong></p>
+                  <p>Thư ký Ngọc Diệu: <strong>0862.515.596</strong></p>
                 </div>
               </motion.div>
 
@@ -191,10 +191,22 @@ export default function Contact() {
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <span className={styles.infoIcon}>✉️</span>
+                <span className={styles.infoIcon}>📘</span>
                 <div className={styles.infoContent}>
-                  <h4>Email</h4>
-                  <p>info@connhikhuchadong.vn</p>
+                  <h4>Fanpage Facebook</h4>
+                  <p>Côn Nhị Khúc Hà Đông</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className={styles.infoItem}
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <span className={styles.infoIcon}>🎵</span>
+                <div className={styles.infoContent}>
+                  <h4>TikTok</h4>
+                  <p>Côn Nhị Khúc Hà Đông</p>
                 </div>
               </motion.div>
 
