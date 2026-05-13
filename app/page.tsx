@@ -49,6 +49,28 @@ export default function HomePage() {
     setMounted(true);
   }, []);
 
+  // After mount, scroll to hash target once lazy sections have rendered
+  useEffect(() => {
+    if (!mounted) return;
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    const targetId = hash.substring(1);
+    const headerHeight = 80;
+
+    const attemptScroll = (attempts = 0) => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+        window.scrollTo({ top, behavior: "smooth" });
+      } else if (attempts < 15) {
+        setTimeout(() => attemptScroll(attempts + 1), 200);
+      }
+    };
+
+    attemptScroll();
+  }, [mounted]);
+
   // Simple loading state
   if (!mounted) {
     return (
