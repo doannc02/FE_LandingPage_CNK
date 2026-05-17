@@ -3,11 +3,24 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://api.dangcapnc.io.vn/api";
 
+// Server-side only: bỏ qua SSL cert validation khi test local HTTPS
+// (backend .NET dùng self-signed dev cert trên localhost)
+const isServerLocalHttps =
+  typeof window === "undefined" &&
+  process.env.NODE_ENV === "development" &&
+  API_BASE_URL.startsWith("https://localhost");
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const httpsAgent = isServerLocalHttps
+  ? new (require("https").Agent)({ rejectUnauthorized: false })
+  : undefined;
+
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  ...(httpsAgent ? { httpsAgent } : {}),
 });
 
 // Request interceptor - Thêm token vào header (guard cho SSR)
@@ -38,9 +51,10 @@ apiClient.interceptors.response.use(
 
       if (refreshToken) {
         try {
+          const currentAccessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
           const res = await axios.post<ApiResponse<{ accessToken: string; refreshToken: string }>>(
             `${API_BASE_URL}/auth/refresh`,
-            { refreshToken }
+            { accessToken: currentAccessToken, refreshToken }
           );
 
           if (res.data.isSuccess && res.data.data) {

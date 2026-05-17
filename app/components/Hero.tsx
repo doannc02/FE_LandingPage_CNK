@@ -11,27 +11,27 @@ export default function Hero() {
     {
       icon: "✓",
       text: "Cam kết học lại miễn phí khi chưa đạt mục tiêu",
-      color: "#f87614",
+      color: "#dc2626",
     },
     {
       icon: "✓",
       text: "Đội ngũ HLV 100% được đào tạo bài bản",
-      color: "#ff6b00",
+      color: "#991b1b",
     },
     {
       icon: "✓",
       text: "Phương pháp huấn luyện khoa học có giáo trình rõ ràng, trực quan",
-      color: "#ff9f4a",
+      color: "#ef4444",
     },
     {
       icon: "✓",
       text: "Rút ngắn 40% thời gian học với phương pháp tự tập luyện tại nhà",
-      color: "#f87614",
+      color: "#dc2626",
     },
     {
       icon: "✓",
       text: "13+ năm kinh nghiệm trong lĩnh vực côn nhị khúc, tận tâm với học viên",
-      color: "#ff6b00",
+      color: "#991b1b",
     },
   ];
 
@@ -183,7 +183,7 @@ export default function Hero() {
               className={styles.ctaWrapper}
             >
               <motion.a
-                href="tel:0868699860"
+                href="#dang-ky"
                 className={styles.ctaPrimary}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -210,7 +210,7 @@ export default function Hero() {
                     repeatDelay: 1,
                   }}
                 >
-                  📞
+                  🥋
                 </motion.span>
                 Đăng ký học thử miễn phí
               </motion.a>
@@ -228,8 +228,8 @@ export default function Hero() {
                 }}
                 whileHover={{
                   scale: 1.03,
-                  borderColor: "#f87614",
-                  color: "#f87614",
+                  borderColor: "#dc2626",
+                  color: "#dc2626",
                   transition: { duration: 0.2 },
                 }}
                 whileTap={{ scale: 0.97 }}
@@ -448,7 +448,7 @@ export default function Hero() {
               whileHover={{
                 scale: 1.05,
                 y: -5,
-                backgroundColor: "rgba(248, 118, 20, 0.15)",
+                backgroundColor: "rgba(220, 38, 38, 0.08)",
                 transition: { duration: 0.2 },
               }}
             >

@@ -26,7 +26,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
-  background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
+  background: #ffffff;
   border-radius: 1.5rem;
   overflow: hidden;
   margin-bottom: 4rem;
@@ -90,7 +90,7 @@
 }
 
 .highlight {
-  color: #f87614;
+  color: #dc2626;
   font-weight: 700;
   font-size: 1.125rem;
 }
@@ -135,8 +135,8 @@
 
 .channelButton:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(248, 118, 20, 0.15);
-  border-color: rgba(248, 118, 20, 0.2);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.12);
+  border-color: rgba(220, 38, 38, 0.15);
 }
 
 .channelIcon {
@@ -279,7 +279,7 @@
 .divider {
   width: 60px;
   height: 4px;
-  background: linear-gradient(135deg, #f87614 0%, #ff9f4a 100%);
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
   border-radius: 2px;
   margin-bottom: 1.5rem;
 }
@@ -438,7 +438,7 @@
 
 /* ==================== ACCESSIBILITY ==================== */
 .channelButton:focus-visible {
-  outline: 3px solid #f87614;
+  outline: 3px solid #dc2626;
   outline-offset: 3px;
 }
 

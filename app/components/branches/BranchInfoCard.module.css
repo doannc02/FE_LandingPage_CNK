@@ -1,0 +1,95 @@
+/* ═══════════════════════════════════════════════════════════
+   BRANCH INFO CARD — Detail page information panel
+   ═══════════════════════════════════════════════════════════ */
+
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.375rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-gray-100);
+  margin: 0;
+}
+
+/* Individual info row */
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.iconWrap {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  background: rgba(220, 38, 38, 0.07);
+  border: 1px solid rgba(220, 38, 38, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.infoContent {
+  min-width: 0;
+  flex: 1;
+}
+
+.infoLabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-gray-400);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.infoValue {
+  font-size: 0.9rem;
+  color: var(--color-gray-700);
+  line-height: 1.55;
+}
+
+/* Fee variants */
+.feeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feeValue {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+.freeBadge {
+  display: inline-block;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  color: var(--color-success);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+}
+
+/* Description */
+.description {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  line-height: 1.7;
+}
