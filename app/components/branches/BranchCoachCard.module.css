@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════════════════════
+   BRANCH COACH CARD — Profile card with cover + avatar
+   ═══════════════════════════════════════════════════════════ */
+
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+/* Cover image strip */
+.cover {
+  position: relative;
+  height: 6.5rem;
+  background: var(--color-gray-100);
+  overflow: hidden;
+}
+
+.coverImg {
+  object-fit: cover;
+}
+
+.coverOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent);
+}
+
+.coverDefault {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-gray-100), var(--color-gray-200));
+}
+
+/* Avatar + title badge row */
+.avatarRow {
+  position: relative;
+  margin-top: -2.75rem;
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.avatar {
+  width: 5.25rem;
+  height: 5.25rem;
+  border-radius: 50%;
+  border: 3px solid var(--color-white);
+  background: var(--color-gray-100);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarInitial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-gray-500);
+}
+
+.titleBadge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 0.375rem;
+}
+
+.titleHead {
+  background: var(--gradient-primary);
+  color: var(--color-white);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.28);
+}
+
+.titleAssistant {
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+  border: 1px solid var(--color-gray-200);
+}
+
+/* Body */
+.body {
+  padding: 0.625rem 1.25rem 1.375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.nameBlock {
+  /* contains name, specialization, experience */
+}
+
+.name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  line-height: 1.2;
+}
+
+.specialization {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: 0.15rem;
+}
+
+.experience {
+  font-size: 0.78rem;
+  color: var(--color-gray-400);
+  margin-top: 0.15rem;
+}
+
+.bio {
+  font-size: 0.85rem;
+  color: var(--color-gray-500);
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Certifications */
+.certs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.certsLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-gray-400);
+}
+
+.certIcon {
+  color: var(--color-gray-400);
+}
+
+.certsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.certBadge {
+  display: inline-block;
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-600);
+  font-size: 0.72rem;
+  padding: 0.2rem 0.625rem;
+  border-radius: var(--radius-full);
+}
+
+/* Contact row */
+.contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.contactLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.82rem;
+  color: var(--color-gray-500);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.contactLink:hover {
+  color: var(--color-primary);
+}

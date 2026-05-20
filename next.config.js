@@ -39,6 +39,16 @@ const nextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      // Branch/coach images from backend API
+      {
+        protocol: "https",
+        hostname: "api.dangcapnc.io.vn",
+      },
+      {
+        protocol: "https",
+        hostname: "localhost",
+        port: "52040",
+      },
       {
         protocol: "https",
         hostname: "connhikhuchadong.vn",

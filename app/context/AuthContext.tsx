@@ -19,7 +19,7 @@ import { initializeApp, getApps } from "firebase/app";
 import { authApi, type RegisterRequest } from "@/app/lib/api/auth";
 
 // ── Types ──────────────────────────────────────────────────────────────────
-export type UserRole = "SuperAdmin" | "SubAdmin" | "Student";
+export type UserRole = "SuperAdmin" | "SubAdmin" | "Student" | "Guest";
 
 export interface AuthUser {
   id: string;

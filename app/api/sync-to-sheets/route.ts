@@ -50,6 +50,12 @@ function getLocationName(locationId: string) {
 
 function getStatusLabel(status: string) {
   const labels: Record<string, string> = {
+    // Backend ContactStatus enum (string values)
+    New: 'Mới',
+    Read: 'Đã đọc',
+    Replied: 'Đã trả lời',
+    Archived: 'Đã lưu trữ',
+    // Legacy values (kept for backward compatibility)
     pending: 'Chờ xử lý',
     contacted: 'Đã liên hệ',
     enrolled: 'Đã ghi danh',

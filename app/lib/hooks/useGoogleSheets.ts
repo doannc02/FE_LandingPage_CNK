@@ -46,14 +46,14 @@ export const useSyncAllToSheets = () => {
       const contacts = contactsRes.data.data || [];
       const registrations = registrationsRes.data.data || [];
 
-      // Calculate stats
+      // Calculate stats using backend ContactStatus enum values
       const allSubmissions = [...contacts, ...registrations];
       const stats = {
         total: allSubmissions.length,
-        pending: allSubmissions.filter(s => s.status === 'pending').length,
-        contacted: allSubmissions.filter(s => s.status === 'contacted').length,
-        enrolled: allSubmissions.filter(s => s.status === 'enrolled').length,
-        rejected: allSubmissions.filter(s => s.status === 'rejected').length,
+        pending: allSubmissions.filter(s => s.status === 'New').length,
+        contacted: allSubmissions.filter(s => s.status === 'Read').length,
+        enrolled: allSubmissions.filter(s => s.status === 'Replied').length,
+        rejected: allSubmissions.filter(s => s.status === 'Archived').length,
       };
 
       // Sync each type

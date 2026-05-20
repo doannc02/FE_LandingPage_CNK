@@ -16,8 +16,8 @@ export default function Courses() {
   const getLevelColor = (level: string) => {
     switch (level) {
       case 'Beginner': return 'Cơ bản';
-      case 'Intermediate': return 'Nâng cao';
-      case 'Advanced': return 'Chuyên nghiệp';
+      case 'Intermediate': return 'Trung cấp';
+      case 'Advanced': return 'Nâng cao';
       case 'Professional': return 'Chuyên nghiệp';
       default: return level;
     }

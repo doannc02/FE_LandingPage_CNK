@@ -1,5 +1,6 @@
 // lib/hooks/useContact.ts
 import { useMutation } from "@tanstack/react-query";
+import { contactApi } from "../api/contact";
 
 interface ContactData {
   fullName: string;
@@ -12,56 +13,23 @@ interface ContactData {
   message: string;
 }
 
-// Google Sheets Web App URL - Replace with your actual URL
-const GOOGLE_SHEETS_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL || "";
-
 async function submitContact(data: ContactData) {
-  const timestamp = new Date().toLocaleString("vi-VN", {
-    timeZone: "Asia/Ho_Chi_Minh",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const messageParts = [
+    data.message,
+    data.purpose ? `Mục đích: ${data.purpose}` : "",
+    data.trainingType
+      ? `Hình thức: ${data.trainingType === "online" ? "Online" : "Trực tiếp"}`
+      : "",
+    data.age ? `Tuổi: ${data.age}` : "",
+    data.location ? `Cơ sở: ${data.location}` : "",
+  ].filter(Boolean);
 
-  const locationNames: Record<string, string> = {
-    "van-yen": "Cơ sở 1: Trường TH Văn Yên - Hà Đông (MIỄN PHÍ)",
-    "kien-hung": "Cơ sở 2: Vườn hoa Hàng Bè - Kiến Hưng (MIỄN PHÍ)",
-    "thong-nhat": "Cơ sở 3: Công viên Thống Nhất (300k/tháng)",
-    "hoa-binh": "Cơ sở 4: Công viên Hòa Bình (300k/tháng)",
-    "kim-giang": "Cơ sở 5: Kim Giang - Thanh Xuân (300k/tháng)",
-  };
-
-  const payload = {
-    timestamp,
+  return contactApi.submitContact({
     fullName: data.fullName,
-    age: data.age,
     phone: data.phone,
-    email: data.email || "Không cung cấp",
-    purpose: data.purpose,
-    trainingType: data.trainingType === "online" ? "Online" : "Trực tiếp",
-    location: locationNames[data.location] || data.location,
-    message: data.message || "Không có lời nhắn",
-  };
-
-  // Send to Google Sheets
-  if (GOOGLE_SHEETS_URL) {
-    const response = await fetch(GOOGLE_SHEETS_URL, {
-      method: "POST",
-      mode: "no-cors", // Important for Google Apps Script
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    return { success: true };
-  } else {
-    // Fallback: Log to console
-    console.log("📝 Contact Form Data:", payload);
-    return { success: true };
-  }
+    email: data.email,
+    message: messageParts.join("\n"),
+  });
 }
 
 export function useSubmitContact() {

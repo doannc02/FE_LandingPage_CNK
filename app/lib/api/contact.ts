@@ -14,7 +14,7 @@ export interface ContactSubmission {
 export interface CreateContactRequest {
   fullName: string;
   phone: string;
-  email: string;
+  email?: string;
   courseId?: string;
   message: string;
 }
