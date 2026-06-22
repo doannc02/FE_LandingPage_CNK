@@ -72,7 +72,7 @@ function CoachStrip({ coaches }: { coaches: BranchCoachSummary[] }) {
   );
 }
 
-function BranchCard({ branch, index }: { branch: BranchListItem; index: number }) {
+function BranchCard({ branch, index, showDetail }: { branch: BranchListItem; index: number; showDetail: boolean }) {
   return (
     <motion.div
       className={styles.card}
@@ -132,22 +132,31 @@ function BranchCard({ branch, index }: { branch: BranchListItem; index: number }
         {branch.coaches.length > 0 && <CoachStrip coaches={branch.coaches} />}
 
         <div className={styles.cardActions}>
-          <Link
-            href={`/co-so/${branch.id}`}
-            className={styles.btnDetail}
-            aria-label={`Xem chi tiết ${branch.name}`}
-          >
-            Xem chi tiết
-            <ArrowRight size={13} />
-          </Link>
-          <Link
-            href={`/co-so/${branch.id}#map`}
-            className={styles.btnMap}
-            aria-label={`Bản đồ ${branch.name}`}
-            title="Xem bản đồ"
-          >
-            <Map size={15} />
-          </Link>
+          {showDetail ? (
+            <>
+              <Link
+                href={`/co-so/${branch.id}`}
+                className={styles.btnDetail}
+                aria-label={`Xem chi tiết ${branch.name}`}
+              >
+                Xem chi tiết
+                <ArrowRight size={13} />
+              </Link>
+              <Link
+                href={`/co-so/${branch.id}#map`}
+                className={styles.btnMap}
+                aria-label={`Bản đồ ${branch.name}`}
+                title="Xem bản đồ"
+              >
+                <Map size={15} />
+              </Link>
+            </>
+          ) : (
+            <a href="#dang-ky" className={styles.btnDetail} aria-label="Đăng ký tìm hiểu thêm">
+              Đăng ký tìm hiểu
+              <ArrowRight size={13} />
+            </a>
+          )}
         </div>
       </div>
     </motion.div>
@@ -161,7 +170,8 @@ export default function BranchPreview() {
 
   const { data: apiBranches } = useBranches();
 
-  const branches = (apiBranches && apiBranches.length > 0) ? apiBranches : FALLBACK_BRANCHES;
+  const hasRealData = Array.isArray(apiBranches) && apiBranches.length > 0;
+  const branches = hasRealData ? apiBranches : FALLBACK_BRANCHES;
   const branchCount = branches.length;
 
   const stats = [
@@ -216,7 +226,7 @@ export default function BranchPreview() {
         {/* Branch grid */}
         <div className={styles.grid}>
           {branches.map((branch, i) => (
-            <BranchCard key={branch.id} branch={branch} index={i} />
+            <BranchCard key={branch.id} branch={branch} index={i} showDetail={hasRealData} />
           ))}
         </div>
 
