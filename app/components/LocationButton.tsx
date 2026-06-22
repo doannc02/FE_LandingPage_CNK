@@ -10,19 +10,17 @@ interface LocationButtonProps {
 }
 
 /**
- * Button that prompts the user to share their location.
- * Never auto-requests — only fires on explicit click.
- * Hides itself once location is successfully obtained.
+ * Button that prompts the user to share their GPS location.
+ * When IP-based location is already active, renders as an "upgrade to GPS" button.
+ * Never auto-requests GPS — only fires on explicit click.
  */
-export default function LocationButton({
-  status,
-  onRequest,
-}: LocationButtonProps) {
+export default function LocationButton({ status, onRequest }: LocationButtonProps) {
   const isLoading = status === "loading";
+  const isIpBased = status === "ip-success";
   const hasFailed = status === "denied" || status === "timeout" || status === "error";
 
-  // Once we have location, the banner takes over — hide this button
-  if (status === "success") return null;
+  // Hide when GPS confirmed (most precise) or while IP is loading silently in background
+  if (status === "success" || status === "ip-loading") return null;
 
   return (
     <AnimatePresence>
@@ -41,12 +39,21 @@ export default function LocationButton({
           whileHover={!isLoading ? { scale: 1.02 } : {}}
           whileTap={!isLoading ? { scale: 0.97 } : {}}
           transition={{ duration: 0.15 }}
-          aria-label="Tìm cơ sở gần bạn dựa trên vị trí"
+          aria-label={
+            isIpBased
+              ? "Dùng GPS để xác định vị trí chính xác hơn"
+              : "Tìm cơ sở gần bạn dựa trên vị trí"
+          }
         >
           {isLoading ? (
             <>
               <span className={styles.spinner} aria-hidden="true" />
               <span>Đang xác định vị trí...</span>
+            </>
+          ) : isIpBased ? (
+            <>
+              <span className={styles.icon} aria-hidden="true">🎯</span>
+              <span>Dùng GPS chính xác hơn</span>
             </>
           ) : (
             <>
@@ -57,9 +64,11 @@ export default function LocationButton({
         </motion.button>
 
         <p className={styles.microcopy}>
-          {hasFailed
-            ? "⚠️ Không thể truy cập vị trí. Vui lòng chọn cơ sở thủ công."
-            : "Chúng tôi chỉ dùng vị trí để đề xuất cơ sở phù hợp nhất"}
+          {isIpBased
+            ? "Đang dùng vị trí gần đúng theo mạng — GPS sẽ chính xác hơn"
+            : hasFailed
+              ? "⚠️ Không thể truy cập vị trí. Vui lòng chọn cơ sở thủ công."
+              : "Chúng tôi chỉ dùng vị trí để đề xuất cơ sở phù hợp nhất"}
         </p>
       </motion.div>
     </AnimatePresence>

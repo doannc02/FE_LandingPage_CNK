@@ -78,8 +78,8 @@ export default function BranchListSection({ branches }: Props) {
               branchId={selected.id}
               branchName={selected.name}
               address={selected.address}
-              latitude={null}
-              longitude={null}
+              latitude={selected.latitude ?? null}
+              longitude={selected.longitude ?? null}
             />
           ) : (
             <div className={styles.mapPlaceholder}>
