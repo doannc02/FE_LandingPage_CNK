@@ -1,7 +1,6 @@
 export interface BranchCoachSummary {
   coachId: string;
   fullName: string;
-  /** "HeadCoach" | "AssistantCoach" — backend vẫn có thể trả về 1 | 2 (int) */
   title: string;
   avatarUrl: string | null;
 }
@@ -14,10 +13,13 @@ export interface BranchListItem {
   address: string | null;
   area: string | null;
   thumbnail: string | null;
+  latitude: number | null;
+  longitude: number | null;
   schedule: string | null;
   fee: string | null;
   isFree: boolean;
   isActive: boolean;
+  activeStudentCount: number;
   coaches: BranchCoachSummary[];
 }
 

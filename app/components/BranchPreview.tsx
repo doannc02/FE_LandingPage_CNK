@@ -12,6 +12,33 @@ import styles from './BranchPreview.module.css';
 const EASE = [0.22, 1, 0.36, 1] as const;
 const MAX_COACH_AVATARS = 3;
 
+const FALLBACK_BRANCHES: BranchListItem[] = [
+  {
+    id: 'b1', code: 'VAN-YEN', name: 'Cơ sở Văn Yên — Hà Đông', shortName: 'Hà Đông',
+    address: 'Trường TH Văn Yên, Hà Đông, Hà Nội', area: 'Hà Đông',
+    thumbnail: null, latitude: 20.9625, longitude: 105.7826,
+    schedule: 'Thứ 3, 5, 7 — 18:30–20:00', fee: '800.000đ/tháng',
+    isFree: false, isActive: true, activeStudentCount: 120,
+    coaches: [{ coachId: 'c1', fullName: 'Nguyễn Văn Chất', title: 'HeadCoach', avatarUrl: null }],
+  },
+  {
+    id: 'b2', code: 'KIEN-HUNG', name: 'Cơ sở Kiến Hưng — Hà Đông', shortName: 'Kiến Hưng',
+    address: 'Trường THCS Kiến Hưng, Hà Đông, Hà Nội', area: 'Hà Đông',
+    thumbnail: null, latitude: 20.9501, longitude: 105.7742,
+    schedule: 'Thứ 2, 4, 6 — 17:30–19:00', fee: '800.000đ/tháng',
+    isFree: false, isActive: true, activeStudentCount: 95,
+    coaches: [{ coachId: 'c2', fullName: 'Trần Văn Hùng', title: 'AssistantCoach', avatarUrl: null }],
+  },
+  {
+    id: 'b3', code: 'THONG-NHAT', name: 'Cơ sở Thống Nhất — Hoàng Mai', shortName: 'Thống Nhất',
+    address: 'Công viên Thống Nhất, Hai Bà Trưng, Hà Nội', area: 'Hoàng Mai',
+    thumbnail: null, latitude: 21.0052, longitude: 105.8568,
+    schedule: 'Thứ 3, 5, 7 — 17:00–18:30', fee: '800.000đ/tháng',
+    isFree: false, isActive: true, activeStudentCount: 80,
+    coaches: [{ coachId: 'c3', fullName: 'Lê Văn Linh', title: 'AssistantCoach', avatarUrl: null }],
+  },
+];
+
 function CoachStrip({ coaches }: { coaches: BranchCoachSummary[] }) {
   const visible = coaches.slice(0, MAX_COACH_AVATARS);
   return (
@@ -127,26 +154,15 @@ function BranchCard({ branch, index }: { branch: BranchListItem; index: number }
   );
 }
 
-function SkeletonCard() {
-  return (
-    <div className={styles.skeleton}>
-      <div className={styles.skeletonThumb} />
-      <div className={styles.skeletonBody}>
-        <div className={`${styles.skeletonLine}`} />
-        <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-        <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
-      </div>
-    </div>
-  );
-}
 
 export default function BranchPreview() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
 
-  const { data: branches, isLoading, isError } = useBranches();
+  const { data: apiBranches } = useBranches();
 
-  const branchCount = branches?.length ?? 0;
+  const branches = (apiBranches && apiBranches.length > 0) ? apiBranches : FALLBACK_BRANCHES;
+  const branchCount = branches.length;
 
   const stats = [
     { Icon: MapPin, value: `${branchCount || 5}`, label: 'Cơ sở tập luyện' },
@@ -198,21 +214,11 @@ export default function BranchPreview() {
         </motion.div>
 
         {/* Branch grid */}
-        {isError ? (
-          <p className={styles.errorState}>
-            Không thể tải danh sách cơ sở. <Link href="/co-so" style={{ color: 'var(--color-primary)' }}>Xem tất cả cơ sở →</Link>
-          </p>
-        ) : isLoading ? (
-          <div className={styles.grid}>
-            {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
-          </div>
-        ) : (
-          <div className={styles.grid}>
-            {(branches ?? []).map((branch, i) => (
-              <BranchCard key={branch.id} branch={branch} index={i} />
-            ))}
-          </div>
-        )}
+        <div className={styles.grid}>
+          {branches.map((branch, i) => (
+            <BranchCard key={branch.id} branch={branch} index={i} />
+          ))}
+        </div>
 
         {/* Bottom actions */}
         <motion.div
