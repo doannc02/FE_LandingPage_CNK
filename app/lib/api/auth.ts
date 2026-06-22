@@ -106,8 +106,17 @@ export const authApi = {
     }
   },
 
-  logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+  logout: async (): Promise<void> => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        await apiClient.post('/auth/logout', null, {
+          headers: { Authorization: `Bearer ${token}` },
+        }).catch(() => {});
+      }
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+    }
   },
 };

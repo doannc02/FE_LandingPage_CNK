@@ -109,3 +109,11 @@
   color: #333;
   border-color: #bbb;
 }
+
+.ipNote {
+  font-size: 0.68rem;
+  color: #9ca3af;
+  font-style: italic;
+  white-space: nowrap;
+  cursor: help;
+}

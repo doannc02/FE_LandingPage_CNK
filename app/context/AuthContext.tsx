@@ -224,13 +224,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // ── Logout ─────────────────────────────────────────────────────────────
   const logout = useCallback(async () => {
+    await authApi.logout();
     if (isFirebaseConfigured()) {
       try {
         const auth = getFirebaseAuth();
         await signOut(auth).catch(() => {});
       } catch {}
     }
-    authApi.logout();
     setUser(null);
     localStorage.removeItem("authUser");
   }, []);

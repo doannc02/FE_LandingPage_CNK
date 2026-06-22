@@ -388,6 +388,7 @@ export default function Contact() {
                   <NearestBranchBanner
                     result={nearestBranch}
                     onChangeBranch={() => setUserPickedBranch(true)}
+                    isIpBased={locationStatus === "ip-success"}
                   />
                 )}
 

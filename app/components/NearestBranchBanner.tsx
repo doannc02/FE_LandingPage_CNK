@@ -10,20 +10,23 @@ interface NearestBranchBannerProps {
   onChangeBranch: () => void;
   /** Compact variant for tight spaces like the popup */
   compact?: boolean;
+  /** True when location was obtained via IP (approximate), not GPS */
+  isIpBased?: boolean;
 }
 
 /**
  * Displays the nearest branch suggestion after location is obtained.
+ * Shows an accuracy note when location comes from IP geolocation.
  * Links to Google Maps for directions.
  */
 export default function NearestBranchBanner({
   result,
   onChangeBranch,
   compact = false,
+  isIpBased = false,
 }: NearestBranchBannerProps) {
   const { branch, distance } = result;
 
-  // Google Maps directions URL
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${branch.lat},${branch.lng}`;
 
   const distanceText =
@@ -47,6 +50,14 @@ export default function NearestBranchBanner({
           <span className={styles.label}>Cơ sở gần bạn nhất:</span>
           <span className={styles.name}>{branch.shortName}</span>
           <span className={styles.distance}>({distanceText})</span>
+          {isIpBased && (
+            <span
+              className={styles.ipNote}
+              title="Vị trí ước tính theo mạng, có thể sai vài km — nhấn 'GPS chính xác hơn' để cải thiện"
+            >
+              ≈ gần đúng
+            </span>
+          )}
         </div>
       </div>
 

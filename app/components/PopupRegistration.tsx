@@ -188,24 +188,8 @@ export default function PopupRegistration() {
 
               {/* ── Location suggestion area ─────────────────────────── */}
 
-              {/* Show button when idle/failed (never auto-request) */}
-              {(locationStatus === "idle" ||
-                locationStatus === "denied" ||
-                locationStatus === "timeout" ||
-                locationStatus === "error") && (
-                <LocationButton
-                  status={locationStatus}
-                  onRequest={requestLocation}
-                />
-              )}
-
-              {/* Loading state inline */}
-              {locationStatus === "loading" && (
-                <LocationButton
-                  status={locationStatus}
-                  onRequest={requestLocation}
-                />
-              )}
+              {/* LocationButton handles all states internally — including ip-success upgrade */}
+              <LocationButton status={locationStatus} onRequest={requestLocation} />
 
               {/* Nearest branch banner (compact for popup) */}
               {nearestBranch && (
@@ -213,6 +197,7 @@ export default function PopupRegistration() {
                   result={nearestBranch}
                   onChangeBranch={handleChangeBranch}
                   compact
+                  isIpBased={locationStatus === "ip-success"}
                 />
               )}
 
