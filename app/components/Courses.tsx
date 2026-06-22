@@ -4,14 +4,80 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { useCourses } from '../lib/hooks/useCourses';
+import type { Course } from '../lib/api/course';
 import styles from './Courses.module.css';
+
+const FALLBACK_COURSES: Course[] = [
+  {
+    id: 'f1',
+    name: 'Khóa Cơ Bản',
+    slug: 'co-ban',
+    description: 'Dành cho người mới bắt đầu, chưa có kinh nghiệm võ thuật.',
+    level: 'Beginner',
+    durationMonths: 3,
+    sessionsPerWeek: 3,
+    price: 800000,
+    isFree: false,
+    isFeatured: false,
+    isActive: true,
+    features: [
+      'Tư thế & di chuyển cơ bản',
+      'Kỹ thuật cầm côn an toàn',
+      'Bài quyền đơn giản đầu tiên',
+      'Rèn luyện thể lực nền tảng',
+      'Lớp học thử 1 buổi MIỄN PHÍ',
+    ],
+  },
+  {
+    id: 'f2',
+    name: 'Khóa Trung Cấp',
+    slug: 'trung-cap',
+    description: 'Nâng cao kỹ thuật, học bài quyền nâng cao và chuẩn bị thi đấu.',
+    level: 'Intermediate',
+    durationMonths: 6,
+    sessionsPerWeek: 3,
+    price: 1200000,
+    isFree: false,
+    isFeatured: true,
+    isActive: true,
+    features: [
+      'Bài quyền nâng cao (10+ bài)',
+      'Kỹ thuật xoay côn điêu luyện',
+      'Kết hợp côn với di chuyển',
+      'Chuẩn bị thi đấu cấp quận',
+      'Cam kết kết quả — học lại miễn phí',
+      'Theo dõi tiến độ cá nhân mỗi tháng',
+    ],
+  },
+  {
+    id: 'f3',
+    name: 'Khóa Nâng Cao',
+    slug: 'nang-cao',
+    description: 'Dành cho học viên đã qua trung cấp, hướng tới thi đấu chuyên nghiệp.',
+    level: 'Advanced',
+    durationMonths: 12,
+    sessionsPerWeek: 4,
+    price: 1800000,
+    isFree: false,
+    isFeatured: false,
+    isActive: true,
+    features: [
+      'Kỹ thuật biểu diễn chuyên nghiệp',
+      'Chiến thuật thi đấu cấp thành phố',
+      'Huấn luyện 1-1 với VS Nguyễn Văn Chất',
+      'Dự án thi đấu quốc gia',
+      'Chứng chỉ HLV cơ sở',
+    ],
+  },
+];
 
 export default function Courses() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-  // ✅ GỌI API
-  const { data: courses, isLoading, error } = useCourses();
+  const { data: apiCourses } = useCourses();
+
+  const courses = (apiCourses && apiCourses.length > 0) ? apiCourses : FALLBACK_COURSES;
 
   const getLevelColor = (level: string) => {
     switch (level) {
@@ -22,30 +88,6 @@ export default function Courses() {
       default: return level;
     }
   };
-
-  if (isLoading) {
-    return (
-      <section className="section" id="courses">
-        <div className="container">
-          <p style={{ textAlign: 'center', color: 'var(--color-gray-light)' }}>
-            Đang tải khóa học...
-          </p>
-        </div>
-      </section>
-    );
-  }
-
-  if (error || !courses) {
-    return (
-      <section className="section" id="courses">
-        <div className="container">
-          <p style={{ textAlign: 'center', color: 'var(--color-primary)' }}>
-            Không thể tải danh sách khóa học
-          </p>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className="section" id="courses" ref={ref}>

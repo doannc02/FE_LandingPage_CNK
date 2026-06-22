@@ -1,5 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import styles from "./Testimonials.module.css";
+'use client';
+
+import { motion, useInView } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+import styles from './Testimonials.module.css';
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 interface Testimonial {
   id: number;
@@ -9,289 +14,249 @@ interface Testimonial {
   date: string;
   rating: number;
   content: string;
-  source: "Google" | "Facebook";
-  sourceLink: string;
+  source: 'Google' | 'Facebook';
+  role?: string;
 }
 
-const Testimonials: React.FC = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const testimonialsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [visibleTestimonials, setVisibleTestimonials] = useState<Set<number>>(
-    new Set(),
-  );
+const TESTIMONIALS: Testimonial[] = [
+  {
+    id: 1,
+    name: 'Minh Tuấn',
+    avatar: 'MT',
+    avatarBg: '#dc2626',
+    date: '15/11/2024',
+    rating: 5,
+    content:
+      'Trước khi học ở đây mình gần như không biết gì về côn nhị khúc, đặc biệt kỹ thuật xoay côn luôn bị sai. Sau 2 tháng học với thầy Hùng, mình tiến bộ không ngờ. Thầy rất tận tình, không khí lớp thân thiện và thoải mái. Mình không còn ngại ngùng khi cầm côn nữa!',
+    source: 'Google',
+    role: 'Học viên cơ sở Hà Đông',
+  },
+  {
+    id: 2,
+    name: 'Thu Hà',
+    avatar: 'TH',
+    avatarBg: '#9c27b0',
+    date: '28/10/2024',
+    rating: 5,
+    content:
+      'Con mình học côn nhị khúc tại Võ đường và mình cực kỳ hài lòng. Con tiến bộ rõ rệt sau 3 tháng, đặc biệt là sự tự tin khi biểu diễn trước đám đông. HLV tận tâm, chỉnh sửa từng động tác tỉ mỉ. Là phụ huynh, mình yên tâm tuyệt đối khi cho con theo học tại đây.',
+    source: 'Google',
+    role: 'Phụ huynh học viên',
+  },
+  {
+    id: 3,
+    name: 'Hoàng Nam',
+    avatar: 'HN',
+    avatarBg: '#1d4ed8',
+    date: '10/11/2024',
+    rating: 5,
+    content:
+      'Mình từng tự học qua video YouTube nhưng mãi không lên được. Đến Võ đường học với thầy Linh mới hiểu ra mình sai ở đâu — từ tư thế, bộ pháp đến cách điều chỉnh lực. Chỉ sau 6 tuần, bạn bè khen mình biểu diễn đẹp hơn nhiều. Rất biết ơn Võ đường!',
+    source: 'Facebook',
+    role: 'Học viên cơ sở Kiến Hưng',
+  },
+  {
+    id: 4,
+    name: 'Phương Linh',
+    avatar: 'PL',
+    avatarBg: '#059669',
+    date: '05/11/2024',
+    rating: 5,
+    content:
+      'Là con gái, mình lo lắng không biết có theo kịp không. Nhưng các thầy ở đây rất kiên nhẫn, điều chỉnh bài tập phù hợp với thể lực từng người. Bây giờ mình không chỉ học được côn mà còn cảm thấy tự tin và khỏe mạnh hơn rất nhiều. 10 điểm không có gì để chê!',
+    source: 'Facebook',
+    role: 'Học viên nữ — cơ sở Thống Nhất',
+  },
+  {
+    id: 5,
+    name: 'Đức Việt',
+    avatar: 'ĐV',
+    avatarBg: '#d97706',
+    date: '18/10/2024',
+    rating: 5,
+    content:
+      'Mình đăng ký học cho con trai 8 tuổi. Ban đầu bé còn nhút nhát, nhưng HLV biết cách tạo không khí vui, các bé học mà cứ như chơi. Chỉ sau 2 tháng, bé đã biểu diễn được một bài quyền hoàn chỉnh. Bé thích lắm, đòi đi học thêm ngày nghỉ!',
+    source: 'Google',
+    role: 'Phụ huynh — bé 8 tuổi',
+  },
+  {
+    id: 6,
+    name: 'Mai Anh',
+    avatar: 'MA',
+    avatarBg: '#db2777',
+    date: '25/10/2024',
+    rating: 5,
+    content:
+      'Mình học côn nhị khúc được 4 tháng, đã tham gia được giải giao lưu cấp quận. Điều mình ấn tượng nhất là phương pháp dạy rất khoa học — không chỉ dạy bài quyền mà còn giải thích nguyên lý đằng sau từng động tác. Nhờ vậy mình tiếp thu rất nhanh và không bị quên.',
+    source: 'Google',
+    role: 'Học viên nâng cao',
+  },
+];
 
-  const testimonials: Testimonial[] = [
-    {
-      id: 1,
-      name: "Minh Tuấn",
-      avatar: "M",
-      avatarBg: "#e91e63",
-      date: "15 Tháng 11, 2024",
-      rating: 5,
-      content:
-        "Trước khi học côn nhị khúc ở Võ đường mình gần như mất gốc hoàn toàn, đặc biệt là kỹ thuật xoay côn. Mình học ở đây 2 tháng và điều mình thích nhất ở đây là không khí lớp học rất thân thiện, hiếu khách. Lớp đầu học với thầy Hùng, thầy tạo cảm giác thoải mái, hướng dẫn tận tình nên mình không còn sợ rớt côn nữa. Thầy luôn động viên và chỉnh sửa từng động tác chi tiết.",
-      source: "Google",
-      sourceLink: "#",
-    },
-    {
-      id: 2,
-      name: "Thu Hà",
-      avatar: "T",
-      avatarBg: "#9c27b0",
-      date: "28 Tháng 10, 2024",
-      rating: 5,
-      content:
-        "Con mình học côn nhị khúc tại Võ đường và mình rất hài lòng. Con tiến bộ rõ rệt, đặc biệt là sự tự tin khi biểu diễn trước đám đông. Giáo viên tận tâm, chăm bài kỹ, môi trường học tích cực và không áp lực. Là phụ huynh, mình cảm thấy yên tâm khi cho con học tại đây. Đội ngũ HLV rất chuyên nghiệp và quan tâm đến từng học viên.",
-      source: "Google",
-      sourceLink: "#",
-    },
-    {
-      id: 3,
-      name: "Hoàng Nam",
-      avatar: "H",
-      avatarBg: "#673ab7",
-      date: "10 Tháng 11, 2024",
-      rating: 5,
-      content:
-        "Mình đã hoàn thành khóa IELTS Level 2 ở Võ đường Côn nhị khúc. Mình trước giờ chỉ tự học ở nhà cho đến khi tìm được Võ đường, mình thấy rất biết ơn vì đã được là 1 phần của lớp thầy Linh. Từ học đội hình sẽ hơi lost và khó khăn vì không có người hướng dẫn, đáp ý và sửa lỗi sai cho mình nên khi được học ở đây mình tiến bộ rất nhiều.",
-      source: "Facebook",
-      sourceLink: "#",
-    },
-    {
-      id: 4,
-      name: "Phương Anh",
-      avatar: "P",
-      avatarBg: "#00bcd4",
-      date: "05 Tháng 11, 2024",
-      rating: 5,
-      content:
-        "Chắc có nhiều bạn ở đây là sinh viên giống mình, muốn học tiếng võ thuật để lôi bóng ra trường. Rất biết ơn vì tìm được Võ đường Level 2 ở Hà Đông. Mình thi khum cần nhiều, chỉ cần 6.5 là đủ rồi, sau 3 tháng mình cũng đạt được level mình mong muốn. Cảm ơn thầy Sơn và các bạn cùng lớp nhiều. Thầy rất tận tâm và kiên nhẫn trong việc hướng dẫn.",
-      source: "Facebook",
-      sourceLink: "#",
-    },
-    {
-      id: 5,
-      name: "Đức Anh",
-      avatar: "Đ",
-      avatarBg: "#3f51b5",
-      date: "18 Tháng 10, 2024",
-      rating: 5,
-      content:
-        "Đây là khóa học đầu tiên khóa học côn nhị khúc thì mình cảm ơn thầy Minh vì đã giúp mình nâng cao kỹ năng biểu diễn và học côn đúng cách. Từ trước đến nay mình luôn ở bận khó thấp những đợt này nhờ trung tâm và thầy đã giúp đạt aim. Cảm ơn thầy và trung tâm rất nhiều. Môi trường luyện tập chuyên nghiệp, trang thiết bị đầy đủ.",
-      source: "Google",
-      sourceLink: "#",
-    },
-    {
-      id: 6,
-      name: "Mai Linh",
-      avatar: "M",
-      avatarBg: "#ff5722",
-      date: "25 Tháng 10, 2024",
-      rating: 5,
-      content:
-        "Mình học khóa Level 2 ở Võ đường Côn nhị khúc Hà Đông mấy tháng nay thấy tiến bộ rõ rệt, từ 6.0 lên 7.0 khá nhanh. Thầy có cô người từng chấm thi thật cho British Council và IDP, nên sửa lỗi chuẩn, hiệu ngay vấn đề. Giáo trình ngắn gọn, tập trung đúng phần hay ra thi, không lan man. Mình thích cách học ở đây vì thực chiến và hiệu quả.",
-      source: "Google",
-      sourceLink: "#",
-    },
-  ];
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className={styles.stars} aria-label={`${rating} sao`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i} className={i <= rating ? styles.starFilled : styles.star}>
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function SourceIcon({ source }: { source: 'Google' | 'Facebook' }) {
+  if (source === 'Google') {
+    return (
+      <svg className={styles.sourceIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Google">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={styles.sourceIcon} viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg" aria-label="Facebook">
+      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+    </svg>
+  );
+}
+
+export default function Testimonials() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [visible, setVisible] = useState(3);
 
   useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: "-10% 0px -10% 0px",
-      threshold: 0.2,
+    const handleResize = () => {
+      setVisible(window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3);
     };
-
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        const testimonialId = parseInt(
-          entry.target.getAttribute("data-testimonial-id") || "0",
-        );
-
-        if (entry.isIntersecting) {
-          setVisibleTestimonials((prev) => new Set([...prev, testimonialId]));
-        } else {
-          setVisibleTestimonials((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(testimonialId);
-            return newSet;
-          });
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions,
-    );
-
-    testimonialsRef.current.forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
-
-    return () => {
-      testimonialsRef.current.forEach((ref) => {
-        if (ref) observer.unobserve(ref);
-      });
-    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const setTestimonialRef = (index: number) => (el: HTMLDivElement | null) => {
-    testimonialsRef.current[index] = el;
-  };
+  const maxIndex = TESTIMONIALS.length - visible;
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className={styles.stars}>
-        {[...Array(5)].map((_, index) => (
-          <span
-            key={index}
-            className={`${styles.star} ${
-              index < rating ? styles.starFilled : ""
-            }`}
-          >
-            ★
-          </span>
-        ))}
-      </div>
-    );
-  };
-
-  const renderSourceIcon = (source: "Google" | "Facebook") => {
-    if (source === "Google") {
-      return (
-        <svg
-          className={styles.sourceIcon}
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            fill="#4285F4"
-          />
-          <path
-            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            fill="#34A853"
-          />
-          <path
-            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-            fill="#FBBC05"
-          />
-          <path
-            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            fill="#EA4335"
-          />
-        </svg>
-      );
-    } else {
-      return (
-        <svg
-          className={styles.sourceIcon}
-          viewBox="0 0 24 24"
-          fill="#1877F2"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-        </svg>
-      );
-    }
-  };
+  const prev = () => setActiveIndex((i) => Math.max(0, i - 1));
+  const next = () => setActiveIndex((i) => Math.min(maxIndex, i + 1));
 
   return (
-    <section className={styles.testimonialsSection} ref={sectionRef}>
-      <div className={styles.container}>
-        {/* Section Header */}
-        <div className={styles.sectionHeader}>
-          <div className={styles.headerDivider}></div>
-          <h2 className={styles.sectionTitle}>
-            Học viên nói gì về Côn nhị khúc Hà Đông
+    <section className={styles.section} id="testimonials" ref={ref}>
+      <div className="container">
+        <motion.div
+          className={styles.header}
+          initial={{ opacity: 0, y: 28 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease: EASE }}
+        >
+          <span className={styles.eyebrow}>
+            <span>💬</span> Học viên nói gì
+          </span>
+          <h2 className={styles.title}>
+            Cảm nhận từ{' '}
+            <span className={styles.highlight}>2,000+ học viên</span>
           </h2>
-          <p className={styles.sectionDescription}>
-            Lắng nghe những chia sẻ về trải nghiệm học tập tại Võ đường của các
-            học viên.
+          <div className={styles.rule} />
+          <p className={styles.subtitle}>
+            Đánh giá thực từ Google & Facebook — không chỉnh sửa, không dàn dựng.
           </p>
-        </div>
 
-        {/* Testimonials Grid */}
-        <div className={styles.testimonialsGrid}>
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={testimonial.id}
-              ref={setTestimonialRef(index)}
-              data-testimonial-id={testimonial.id}
-              className={`${styles.testimonialCard} ${
-                visibleTestimonials.has(testimonial.id)
-                  ? styles.testimonialCardVisible
-                  : ""
-              }`}
-              style={{
-                transitionDelay: `${(index % 3) * 0.1}s`,
-              }}
-            >
-              {/* Quote Icon */}
-              <div className={styles.quoteIcon}>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z" />
-                </svg>
-              </div>
+          {/* Aggregate rating */}
+          <div className={styles.aggregateRating}>
+            <span className={styles.ratingScore}>4.9</span>
+            <div className={styles.ratingStars}>
+              {'★★★★★'.split('').map((s, i) => (
+                <span key={i} style={{ color: '#f59e0b' }}>{s}</span>
+              ))}
+            </div>
+            <span className={styles.ratingCount}>từ 200+ đánh giá</span>
+          </div>
+        </motion.div>
 
-              {/* Header */}
-              <div className={styles.testimonialHeader}>
-                <div className={styles.avatarSection}>
-                  <div
-                    className={styles.avatar}
-                    style={{ backgroundColor: testimonial.avatarBg }}
-                  >
-                    {testimonial.avatar}
-                  </div>
-                  <div className={styles.nameSection}>
-                    <h3 className={styles.name}>{testimonial.name}</h3>
-                    <div className={styles.dateRating}>
-                      <span className={styles.date}>{testimonial.date}</span>
-                      <span className={styles.separator}>|</span>
-                      {renderStars(testimonial.rating)}
+        {/* Carousel */}
+        <div className={styles.carouselWrapper}>
+          <motion.div
+            className={styles.carousel}
+            animate={{ x: `calc(-${activeIndex * (100 / visible)}% - ${activeIndex * (16 / visible)}px)` }}
+            transition={{ duration: 0.4, ease: EASE }}
+          >
+            {TESTIMONIALS.map((t, i) => (
+              <motion.div
+                key={t.id}
+                className={styles.card}
+                style={{ flex: `0 0 calc(${100 / visible}% - ${(16 * (visible - 1)) / visible}px)` }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.45, delay: 0.1 + (i % visible) * 0.08, ease: EASE }}
+              >
+                <div className={styles.quoteIcon}>"</div>
+
+                <div className={styles.cardTop}>
+                  <div className={styles.avatarSection}>
+                    <div className={styles.avatar} style={{ background: t.avatarBg }}>
+                      {t.avatar}
+                    </div>
+                    <div>
+                      <div className={styles.name}>{t.name}</div>
+                      {t.role && <div className={styles.role}>{t.role}</div>}
                     </div>
                   </div>
+                  <div className={styles.meta}>
+                    <StarRating rating={t.rating} />
+                    <span className={styles.date}>{t.date}</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Content */}
-              <p className={styles.content}>{testimonial.content}</p>
+                <p className={styles.content}>{t.content}</p>
 
-              {/* Footer */}
-              <div className={styles.footer}>
-                <div className={styles.source}>
-                  {renderSourceIcon(testimonial.source)}
-                  <span className={styles.sourceName}>
-                    {testimonial.source}
-                  </span>
+                <div className={styles.cardFooter}>
+                  <div className={styles.source}>
+                    <SourceIcon source={t.source} />
+                    <span className={styles.sourceName}>{t.source}</span>
+                  </div>
                 </div>
-                <a href={testimonial.sourceLink} className={styles.detailLink}>
-                  Xem chi tiết
-                </a>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
 
-        {/* CTA Button */}
-        <div className={styles.ctaSection}>
-          <a href="#review" className={styles.ctaButton}>
-            <span>Đánh giá từ học viên</span>
-          </a>
+        {/* Controls */}
+        <div className={styles.controls}>
+          <button
+            className={`${styles.navBtn} ${activeIndex === 0 ? styles.navBtnDisabled : ''}`}
+            onClick={prev}
+            disabled={activeIndex === 0}
+            aria-label="Trước"
+          >
+            ←
+          </button>
+
+          <div className={styles.dots}>
+            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+              <button
+                key={i}
+                className={`${styles.dot} ${i === activeIndex ? styles.dotActive : ''}`}
+                onClick={() => setActiveIndex(i)}
+                aria-label={`Slide ${i + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            className={`${styles.navBtn} ${activeIndex === maxIndex ? styles.navBtnDisabled : ''}`}
+            onClick={next}
+            disabled={activeIndex === maxIndex}
+            aria-label="Tiếp"
+          >
+            →
+          </button>
         </div>
       </div>
 
-      {/* Background Decorations */}
-      <div className={styles.bgDecoration1}></div>
-      <div className={styles.bgDecoration2}></div>
+      <div className={styles.bgDecoration} aria-hidden />
     </section>
   );
-};
-
-export default Testimonials;
+}

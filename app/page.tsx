@@ -3,27 +3,26 @@
 import { useEffect, useState, Suspense, lazy } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-
-// Eager-loaded new sections (small, critical for conversion)
 import FloatingCTA from "./components/FloatingCTA";
 
-// Lazy load sections
+// Critical conversion sections — lazy-loaded
 const About = lazy(() => import("./components/About"));
+const CoachesSection = lazy(() => import("./components/CoachesSection"));
 const BranchPreview = lazy(() => import("./components/BranchPreview"));
+const AchievementsSection = lazy(() => import("./components/AchievementsSection"));
 const Benefits = lazy(() => import("./components/Benefets"));
-const News = lazy(() => import("./components/News"));
+const ProcessSection = lazy(() => import("./components/ProcessSection"));
 const Courses = lazy(() => import("./components/Courses"));
-const Testimonials = lazy(() => import("./components/Testimonials"));
-const CTASection = lazy(() => import("./components/CTASection"));
-const SocialRegistration = lazy(
-  () => import("./components/Socialregistration")
-);
 const Gallery = lazy(() => import("./components/Gallery"));
+const Testimonials = lazy(() => import("./components/Testimonials"));
+const FAQSection = lazy(() => import("./components/FAQSection"));
+const CTASection = lazy(() => import("./components/CTASection"));
+const SocialRegistration = lazy(() => import("./components/Socialregistration"));
+const News = lazy(() => import("./components/News"));
 const Contact = lazy(() => import("./components/Contact"));
 const Footer = lazy(() => import("./components/Footer"));
 const PopupRegistration = lazy(() => import("./components/PopupRegistration"));
 
-// Section loading placeholder
 const SectionLoader = () => (
   <div
     style={{
@@ -31,7 +30,6 @@ const SectionLoader = () => (
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: "transparent",
     }}
   >
     <div
@@ -54,15 +52,12 @@ export default function HomePage() {
     setMounted(true);
   }, []);
 
-  // Scroll to hash target after lazy sections have rendered
   useEffect(() => {
     if (!mounted) return;
     const hash = window.location.hash;
     if (!hash) return;
-
     const targetId = hash.substring(1);
     const headerHeight = 80;
-
     const attemptScroll = (attempts = 0) => {
       const el = document.getElementById(targetId);
       if (el) {
@@ -72,7 +67,6 @@ export default function HomePage() {
         setTimeout(() => attemptScroll(attempts + 1), 200);
       }
     };
-
     attemptScroll();
   }, [mounted]);
 
@@ -104,69 +98,89 @@ export default function HomePage() {
 
   return (
     <main className="relative">
-      {/* Popup (lazy, appears on scroll) */}
+      {/* Popup đăng ký (xuất hiện sau 30 giây) */}
       <Suspense fallback={null}>
         <PopupRegistration />
       </Suspense>
 
-      {/* Floating CTA button (eager, appears after scroll threshold) */}
+      {/* Floating CTA - luôn hiện */}
       <FloatingCTA />
 
-      {/* Header + Hero — eager */}
+      {/* 1. Header + Hero — eager, critical path */}
       <Header />
       <Hero />
 
-      {/* About */}
+      {/* 2. Giới thiệu — WE ARE */}
       <Suspense fallback={<SectionLoader />}>
         <About />
       </Suspense>
 
-      {/* Branch preview — new section */}
+      {/* 3. HLV — AUTHORITY: ai dạy bạn? */}
+      <Suspense fallback={<SectionLoader />}>
+        <CoachesSection />
+      </Suspense>
+
+      {/* 4. Cơ sở — WHERE: học ở đâu? */}
       <Suspense fallback={<SectionLoader />}>
         <BranchPreview />
       </Suspense>
 
-      {/* Benefits */}
+      {/* 5. Thành tích — PROOF: bằng chứng */}
+      <Suspense fallback={<SectionLoader />}>
+        <AchievementsSection />
+      </Suspense>
+
+      {/* 6. Lợi ích — WHY: tại sao học đây? */}
       <Suspense fallback={<SectionLoader />}>
         <Benefits />
       </Suspense>
 
-      {/* News */}
+      {/* 7. Lộ trình — HOW: bắt đầu thế nào? */}
       <Suspense fallback={<SectionLoader />}>
-        <News />
+        <ProcessSection />
       </Suspense>
 
-      {/* Courses */}
+      {/* 8. Khóa học — WHAT & PRICE */}
       <Suspense fallback={<SectionLoader />}>
         <Courses />
       </Suspense>
 
-      {/* Testimonials */}
-      <Suspense fallback={<SectionLoader />}>
-        <Testimonials />
-      </Suspense>
-
-      {/* CTA / Registration section — primary conversion point */}
-      <Suspense fallback={<SectionLoader />}>
-        <CTASection />
-      </Suspense>
-
-      {/* Social Registration */}
-      <Suspense fallback={<SectionLoader />}>
-        <SocialRegistration />
-      </Suspense>
-
-      {/* Gallery */}
+      {/* 9. Thư viện — EVIDENCE */}
       <Suspense fallback={<SectionLoader />}>
         <Gallery />
       </Suspense>
 
-      {/* Contact (secondary form / info) */}
+      {/* 10. Đánh giá — SOCIAL PROOF */}
+      <Suspense fallback={<SectionLoader />}>
+        <Testimonials />
+      </Suspense>
+
+      {/* 11. FAQ — OBJECTION HANDLER */}
+      <Suspense fallback={<SectionLoader />}>
+        <FAQSection />
+      </Suspense>
+
+      {/* 12. CTA chính — MAIN CONVERSION */}
+      <Suspense fallback={<SectionLoader />}>
+        <CTASection />
+      </Suspense>
+
+      {/* 13. Đăng ký qua mạng xã hội */}
+      <Suspense fallback={<SectionLoader />}>
+        <SocialRegistration />
+      </Suspense>
+
+      {/* 14. Tin tức */}
+      <Suspense fallback={<SectionLoader />}>
+        <News />
+      </Suspense>
+
+      {/* 15. Liên hệ — backup form */}
       <Suspense fallback={<SectionLoader />}>
         <Contact />
       </Suspense>
 
-      <Suspense fallback={<SectionLoader />}>
+      <Suspense fallback={null}>
         <Footer />
       </Suspense>
 
