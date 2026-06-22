@@ -52,7 +52,7 @@ export default function Footer() {
               </div>
               <p className={styles.brandDescription}>
                 Võ đường rèn luyện thể chất và tinh thần qua côn nhị khúc nghệ
-                thuật. Tôn chỉ "Nhân - Chí - Dũng": sống nhân hậu, nuôi ch지
+                thuật. Tôn chỉ &ldquo;Nhân - Chí - Dũng&rdquo;: sống nhân hậu, nuôi chí
                 bền, hành động dũng cảm. Cơ sở Hà Đông{" "}
                 <strong style={{ color: "var(--color-secondary)" }}>
                   MIỄN PHÍ
@@ -143,7 +143,7 @@ export default function Footer() {
               </div>
               <div className={styles.contactItem}>
                 <span className={styles.contactIcon}>📞</span>
-                <span>0123 456 789</span>
+                <span>0868.699.860</span>
               </div>
               <div className={styles.contactItem}>
                 <span className={styles.contactIcon}>📧</span>

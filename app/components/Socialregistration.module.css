@@ -32,17 +32,6 @@
   margin-bottom: 4rem;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
   position: relative;
-
-  /* Initial state for animation */
-  opacity: 0;
-  transform: translateY(50px) scale(0.95);
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Visible state with animation */
-.registrationCardVisible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
 }
 
 @media (max-width: 1024px) {
@@ -118,19 +107,8 @@
   background: white;
   border-radius: 0.75rem;
   text-decoration: none;
-  transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(0, 0, 0, 0.05);
-
-  /* Initial state for animation */
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-/* Visible state with animation */
-.channelButtonVisible {
-  opacity: 1;
-  transform: translateX(0);
 }
 
 .channelButton:hover {
@@ -264,16 +242,7 @@
 
 /* ==================== BOTTOM CONTENT ==================== */
 .bottomContent {
-  /* Initial state for animation */
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Visible state with animation */
-.bottomContentVisible {
-  opacity: 1;
-  transform: translateY(0);
+  /* animation handled by Framer Motion */
 }
 
 .divider {

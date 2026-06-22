@@ -1,4 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+'use client';
+
+import React from "react";
+import { motion } from "framer-motion";
 import styles from "./Socialregistration.module.css";
 
 interface ContactChannel {
@@ -10,16 +13,9 @@ interface ContactChannel {
   color?: string;
 }
 
-const SocialRegistration: React.FC = () => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const channelsRef = useRef<(HTMLAnchorElement | null)[]>([]);
-  const [isCardVisible, setIsCardVisible] = useState(false);
-  const [isBottomVisible, setIsBottomVisible] = useState(false);
-  const [visibleChannels, setVisibleChannels] = useState<Set<number>>(
-    new Set(),
-  );
+const EASE = [0.4, 0, 0.2, 1] as const;
 
+const SocialRegistration: React.FC = () => {
   const contactChannels: ContactChannel[] = [
     {
       id: "zalo",
@@ -40,14 +36,9 @@ const SocialRegistration: React.FC = () => {
       id: "messenger",
       icon: (
         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="24" cy="24" r="20" fill="url(#messenger-gradient)" />
-          <path
-            d="M24 10C16.3 10 10 15.9 10 23.3C10 27.1 11.7 30.5 14.5 32.7V38L19.5 35.2C21 35.7 22.5 36 24 36C31.7 36 38 30.1 38 22.7C38 15.3 31.7 10 24 10ZM25.5 26.5L21.5 22.2L13.5 26.5L22.5 17L26.5 21.3L34.5 17L25.5 26.5Z"
-            fill="white"
-          />
           <defs>
             <linearGradient
-              id="messenger-gradient"
+              id="msg-grad-sr"
               x1="24"
               y1="4"
               x2="24"
@@ -58,6 +49,11 @@ const SocialRegistration: React.FC = () => {
               <stop offset="1" stopColor="#006AFF" />
             </linearGradient>
           </defs>
+          <circle cx="24" cy="24" r="20" fill="url(#msg-grad-sr)" />
+          <path
+            d="M24 10C16.3 10 10 15.9 10 23.3C10 27.1 11.7 30.5 14.5 32.7V38L19.5 35.2C21 35.7 22.5 36 24 36C31.7 36 38 30.1 38 22.7C38 15.3 31.7 10 24 10ZM25.5 26.5L21.5 22.2L13.5 26.5L22.5 17L26.5 21.3L34.5 17L25.5 26.5Z"
+            fill="white"
+          />
         </svg>
       ),
       title: "Nhắn tin Messenger",
@@ -80,8 +76,8 @@ const SocialRegistration: React.FC = () => {
         </svg>
       ),
       title: "Gọi Hotline",
-      subtitle: "(028) 7309 6990",
-      link: "tel:02873096990",
+      subtitle: "0868.699.860",
+      link: "tel:0868699860",
       color: "#0ea5e9",
     },
     {
@@ -104,88 +100,21 @@ const SocialRegistration: React.FC = () => {
       ),
       title: "Đăng ký kiểm tra trình độ",
       subtitle: "Miễn Phí",
-      link: "#register",
+      link: "#dang-ky",
       color: "#0ea5e9",
     },
   ];
-
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: "-10% 0px -10% 0px",
-      threshold: 0.2,
-    };
-
-    // Observer for main card
-    const cardObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setIsCardVisible(true);
-        } else {
-          setIsCardVisible(false);
-        }
-      });
-    }, observerOptions);
-
-    // Observer for bottom content
-    const bottomObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setIsBottomVisible(true);
-        } else {
-          setIsBottomVisible(false);
-        }
-      });
-    }, observerOptions);
-
-    // Observer for channel buttons
-    const channelsObserver = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        const channelIndex = parseInt(
-          entry.target.getAttribute("data-channel-index") || "0",
-        );
-
-        if (entry.isIntersecting) {
-          setVisibleChannels((prev) => new Set([...prev, channelIndex]));
-        } else {
-          setVisibleChannels((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(channelIndex);
-            return newSet;
-          });
-        }
-      });
-    }, observerOptions);
-
-    // Observe elements
-    if (cardRef.current) cardObserver.observe(cardRef.current);
-    if (bottomRef.current) bottomObserver.observe(bottomRef.current);
-    channelsRef.current.forEach((ref) => {
-      if (ref) channelsObserver.observe(ref);
-    });
-
-    return () => {
-      if (cardRef.current) cardObserver.unobserve(cardRef.current);
-      if (bottomRef.current) bottomObserver.unobserve(bottomRef.current);
-      channelsRef.current.forEach((ref) => {
-        if (ref) channelsObserver.unobserve(ref);
-      });
-    };
-  }, []);
-
-  const setChannelRef = (index: number) => (el: HTMLAnchorElement | null) => {
-    channelsRef.current[index] = el;
-  };
 
   return (
     <section className={styles.registrationSection}>
       <div className={styles.container}>
         {/* Main Registration Card */}
-        <div
-          ref={cardRef}
-          className={`${styles.registrationCard} ${
-            isCardVisible ? styles.registrationCardVisible : ""
-          }`}
+        <motion.div
+          className={styles.registrationCard}
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, ease: EASE }}
         >
           {/* Left Content */}
           <div className={styles.leftContent}>
@@ -202,19 +131,15 @@ const SocialRegistration: React.FC = () => {
             {/* Contact Channels - 2x2 Grid */}
             <div className={styles.channelsGrid}>
               {contactChannels.map((channel, index) => (
-                <a
+                <motion.a
                   key={channel.id}
-                  ref={setChannelRef(index)}
-                  data-channel-index={index}
                   href={channel.link}
-                  className={`${styles.channelButton} ${
-                    visibleChannels.has(index)
-                      ? styles.channelButtonVisible
-                      : ""
-                  }`}
-                  style={{
-                    transitionDelay: `${(index % 2) * 0.1}s`,
-                  }}
+                  className={styles.channelButton}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.4, delay: index * 0.08, ease: EASE }}
+                  whileHover={{ y: -4, boxShadow: "0 8px 20px rgba(220,38,38,0.12)" }}
                 >
                   <div className={styles.channelIcon}>{channel.icon}</div>
                   <div className={styles.channelInfo}>
@@ -226,7 +151,7 @@ const SocialRegistration: React.FC = () => {
                       {channel.subtitle}
                     </div>
                   </div>
-                </a>
+                </motion.a>
               ))}
             </div>
 
@@ -290,14 +215,15 @@ const SocialRegistration: React.FC = () => {
               }}
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Bottom Content Section */}
-        <div
-          ref={bottomRef}
-          className={`${styles.bottomContent} ${
-            isBottomVisible ? styles.bottomContentVisible : ""
-          }`}
+        <motion.div
+          className={styles.bottomContent}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.6, ease: EASE }}
         >
           <div className={styles.divider}></div>
           <h3 className={styles.bottomTitle}>
@@ -320,7 +246,7 @@ const SocialRegistration: React.FC = () => {
               bạn trên hành trình chinh phục mục tiêu võ thuật mong muốn.
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

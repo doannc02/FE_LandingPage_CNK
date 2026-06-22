@@ -54,7 +54,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function About() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.2 });
+  const isInView = useInView(ref, { amount: 0.2, once: true });
 
   // Animate-in when in view, animate-out when not
   const v = (hidden: TargetAndTransition, visible: TargetAndTransition): TargetAndTransition =>
