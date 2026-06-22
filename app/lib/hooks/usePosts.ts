@@ -13,12 +13,12 @@ export const postKeys = {
   related: (slug: string) => [...postKeys.all, "related", slug] as const,
 };
 
-// ✅ GET Posts với pagination
 export function usePosts(params: GetPostsParams = {}) {
   return useQuery({
     queryKey: postKeys.list(params),
     queryFn: () => postsApi.getPosts(params),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 2 * 60 * 1000,
+    retry: 1,
   });
 }
 

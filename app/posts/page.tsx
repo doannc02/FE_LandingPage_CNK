@@ -50,7 +50,7 @@ export default function PostsPage() {
   const [searchInput, setSearchInput] = useState("");
   const [categoryId, setCategoryId] = useState("");
 
-  const { data: postsData, isLoading } = usePosts({
+  const { data: postsData, isLoading, isError } = usePosts({
     pageNumber: page,
     pageSize: PAGE_SIZE,
     status: "Published",
@@ -132,7 +132,12 @@ export default function PostsPage() {
             Kết quả tìm kiếm cho &ldquo;<strong>{search}</strong>&rdquo; — {totalCount} bài viết
           </p>
         )}
-        {isLoading ? (
+        {isError ? (
+          <div style={{ textAlign: "center", padding: "4rem 0", color: "#9ca3af" }}>
+            <p style={{ fontSize: 16, color: "#ef4444" }}>Không thể tải bài viết. Vui lòng thử lại sau.</p>
+            <button onClick={() => window.location.reload()} style={{ marginTop: 12, color: "#dc2626", background: "none", border: "1px solid #dc2626", borderRadius: 8, padding: "8px 16px", cursor: "pointer", fontSize: 14 }}>Thử lại</button>
+          </div>
+        ) : isLoading ? (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 20 }}>
             {Array.from({ length: PAGE_SIZE }).map((_, i) => (
               <div key={i} style={{ borderRadius: 16, overflow: "hidden", border: "1px solid #e5e7eb" }}>

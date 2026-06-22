@@ -70,35 +70,31 @@ export interface GetPostsParams {
   isFeatured?: boolean;
 }
 
+const emptyPage = (params: GetPostsParams): PaginatedResponse<Post> => ({
+  items: [],
+  pageNumber: params.pageNumber ?? 1,
+  pageSize: params.pageSize ?? 20,
+  totalCount: 0,
+  totalPages: 0,
+  hasPrevious: false,
+  hasNext: false,
+});
+
 export const postsApi = {
-  // ✅ GET /api/posts - Danh sách posts với pagination
+  // GET /api/posts - Danh sách posts với pagination
+  // API trả về: { isSuccess: true, data: { items: [...], pageNumber, totalCount, ... } }
   getPosts: async (
     params: GetPostsParams = {}
   ): Promise<PaginatedResponse<Post>> => {
-    try {
-      console.log("Fetching posts with params:", params);
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<Post>>>("/posts", {
+      params,
+    });
 
-      const response = await apiClient.get<PaginatedResponse<Post>>("/posts", {
-        params,
-      });
-
-      console.log("Posts API Response:", response.data);
-
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-
-      // Trả về giá trị mặc định
-      return {
-        items: [],
-        pageNumber: params.pageNumber || 1,
-        pageSize: params.pageSize || 20,
-        totalCount: 0,
-        totalPages: 0,
-        hasPrevious: false,
-        hasNext: false,
-      };
+    if (!response.data?.isSuccess || !response.data?.data) {
+      return emptyPage(params);
     }
+
+    return response.data.data;
   },
 
   // ✅ GET /api/posts/{id} - Chi tiết post by ID
@@ -114,14 +110,14 @@ export const postsApi = {
     return response.data.data;
   },
 
-  // ✅ GET /api/posts/slug/{slug} - Post by slug
+  // GET /api/posts/slug/{slug} - Post by slug
   getPostBySlug: async (slug: string): Promise<PostDetailDto> => {
     const response = await apiClient.get<PostDetailDto>(`/posts/slug/${slug}`);
 
     if (!response.data) {
       throw new Error("Post not found");
     }
-console.log('Fetched post by slug:', response.data);
+
     return response.data;
   },
 
