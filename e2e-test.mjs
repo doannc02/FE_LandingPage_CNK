@@ -5,7 +5,7 @@
  */
 import { chromium } from 'playwright';
 
-const BASE = 'http://localhost:3001';
+const BASE = 'http://localhost:3007';
 let passed = 0;
 let failed = 0;
 
@@ -125,7 +125,7 @@ async function testPostsPage(browser) {
   const page = await browser.newPage();
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto(`${BASE}/posts`, { waitUntil: 'domcontentloaded', timeout: 20000 });
-  await page.waitForTimeout(6000); // Wait for API call + retry
+  await page.waitForTimeout(6000); // Wait for API call + retry (5s timeout + 1 retry)
 
   const pageText = await page.locator('main').textContent().catch(() => '');
   const hasError = pageText.includes('Không thể tải') || pageText.includes('Thử lại');
@@ -138,6 +138,63 @@ async function testPostsPage(browser) {
 
   if (hasError) log(true, 'Posts page: API down → proper error shown');
   if (hasPosts) log(true, 'Posts page: posts loaded from API');
+
+  await page.close();
+}
+
+async function testNewsFallback(browser) {
+  console.log('\n📋 NEWS SECTION FALLBACK TESTS');
+  const page = await browser.newPage();
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.waitForTimeout(2500);
+
+  // Scroll to news section
+  const h = await page.evaluate(() => document.body.scrollHeight);
+  await page.evaluate((h) => window.scrollTo(0, h * 0.78), h);
+  await page.waitForTimeout(2000);
+  try { await page.locator('[class*="close"]').first().click({ timeout: 600 }); } catch {}
+  await page.waitForTimeout(400);
+
+  // News section should show content (fallback articles when API down)
+  const newsText = await page.locator('#news').textContent().catch(() => '');
+  const hasTinTuc = newsText.includes('Tin Tức') || newsText.includes('Tin tức') || newsText.includes('Sự Kiện');
+  log(hasTinTuc, 'News: section header visible');
+
+  const hasArticles = await page.locator('#news article, #news [class*="article"]').count() > 0;
+  const hasFallbackText = newsText.includes('Côn nhị khúc') || newsText.includes('võ thuật') || newsText.includes('Chi tiết');
+  log(hasArticles || hasFallbackText, 'News: articles visible (fallback or real)');
+  log(!newsText.includes('Network Error'), 'News: raw Network Error NOT shown');
+  log(!newsText.includes('Lỗi tải tin tức'), 'News: error state NOT shown (fallback used instead)');
+
+  await page.close();
+}
+
+async function testAnnouncementBar(browser) {
+  console.log('\n📋 ANNOUNCEMENT BAR TESTS');
+  const page = await browser.newPage();
+  await page.setViewportSize({ width: 1280, height: 800 });
+  // Clear localStorage to show announcement bar
+  await page.addInitScript(() => localStorage.clear());
+  await page.goto(BASE, { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await page.waitForTimeout(2000);
+
+  const barText = await page.locator('body').textContent().catch(() => '');
+  const hasBar = barText.includes('Khai giảng') || barText.includes('ưu đãi');
+  log(hasBar, 'Announcement bar: promo text visible');
+
+  // Dismiss and verify it hides
+  const dismissBtn = page.locator('button[aria-label="Đóng thông báo"]').first();
+  const btnVisible = await dismissBtn.isVisible({ timeout: 2000 }).catch(() => false);
+  if (btnVisible) {
+    await dismissBtn.click({ force: true });
+    await page.waitForTimeout(300);
+    const afterText = await page.locator('body').textContent().catch(() => '');
+    const barGone = !afterText.includes('Còn 10 chỗ trống');
+    log(barGone, 'Announcement bar: dismisses on X click');
+  } else {
+    log(false, 'Announcement bar: dismiss button not found');
+  }
 
   await page.close();
 }
@@ -216,6 +273,8 @@ const browser = await chromium.launch();
 try {
   await testHomepage(browser);
   await testNavigation(browser);
+  await testNewsFallback(browser);
+  await testAnnouncementBar(browser);
   await testPostsPage(browser);
   await testCoSoPage(browser);
   await testBranchDetailFallback(browser);

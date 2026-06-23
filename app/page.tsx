@@ -4,6 +4,8 @@ import { useEffect, useState, Suspense, lazy } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import FloatingCTA from "./components/FloatingCTA";
+import AnnouncementBar from "./components/AnnouncementBar";
+import SocialProofTicker from "./components/SocialProofTicker";
 
 // Critical conversion sections — lazy-loaded
 const About = lazy(() => import("./components/About"));
@@ -103,12 +105,18 @@ export default function HomePage() {
         <PopupRegistration />
       </Suspense>
 
+      {/* Announcement bar — dismissible promo */}
+      <AnnouncementBar />
+
       {/* Floating CTA - luôn hiện */}
       <FloatingCTA />
 
       {/* 1. Header + Hero — eager, critical path */}
       <Header />
       <Hero />
+
+      {/* Social proof ticker — trust signals */}
+      <SocialProofTicker />
 
       {/* 2. Giới thiệu — WE ARE */}
       <Suspense fallback={<SectionLoader />}>

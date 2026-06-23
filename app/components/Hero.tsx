@@ -251,12 +251,20 @@ export default function Hero() {
             >
               <div className={styles.socialItem}>
                 <div className={styles.avatarStack}>
-                  {[1, 2, 3].map((i) => (
-                    <motion.img
+                  {(['H', 'T', 'L'] as const).map((letter, i) => (
+                    <motion.div
                       key={i}
-                      src={`/images/student${i}.jpg`}
-                      alt={`Học viên ${i}`}
                       className={styles.avatar}
+                      style={{
+                        background: ['#dc2626', '#b91c1c', '#7f1d1d'][i],
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        flexShrink: 0,
+                      }}
                       initial={{ scale: 0, x: -20 }}
                       animate={{ scale: 1, x: 0 }}
                       transition={{
@@ -270,7 +278,9 @@ export default function Hero() {
                         zIndex: 10,
                         transition: { duration: 0.2 },
                       }}
-                    />
+                    >
+                      {letter}
+                    </motion.div>
                   ))}
                 </div>
                 <motion.div
@@ -279,7 +289,7 @@ export default function Hero() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1.9, duration: 0.4 }}
                 >
-                  <strong>2,000+</strong> học viên tại TP.HCM
+                  <strong>500+</strong> học viên tại Hà Nội
                 </motion.div>
               </div>
 

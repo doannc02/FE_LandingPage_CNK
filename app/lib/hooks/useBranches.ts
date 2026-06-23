@@ -7,7 +7,9 @@ const BASE = (process.env.NEXT_PUBLIC_API_URL ?? 'https://api.dangcapnc.io.vn/ap
 
 // API returns: { isSuccess: true, data: { items: BranchListItem[], pageNumber, totalCount, ... } }
 async function fetchBranches(): Promise<BranchListItem[]> {
-  const res = await fetch(`${BASE}/branches?isActive=true&pageSize=100`);
+  const res = await fetch(`${BASE}/branches?isActive=true&pageSize=100`, {
+    signal: AbortSignal.timeout(5000),
+  });
   if (!res.ok) throw new Error(`fetchBranches: ${res.status}`);
   const json = await res.json() as unknown;
 
