@@ -3,11 +3,13 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import styles from './Testimonials.module.css';
+import { useTestimonials } from '@/app/lib/hooks/useTestimonials';
+import type { TestimonialDto } from '@/app/lib/api/testimonials';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 interface Testimonial {
-  id: number;
+  id: string;
   name: string;
   avatar: string;
   avatarBg: string;
@@ -18,88 +20,96 @@ interface Testimonial {
   role?: string;
 }
 
-const TESTIMONIALS: Testimonial[] = [
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
   {
-    id: 1,
+    id: 'f1',
     name: 'Minh Tuấn',
     avatar: 'MT',
     avatarBg: '#dc2626',
     date: '15/11/2024',
     rating: 5,
-    content:
-      'Trước khi học ở đây mình gần như không biết gì về côn nhị khúc, đặc biệt kỹ thuật xoay côn luôn bị sai. Sau 2 tháng học với thầy Hùng, mình tiến bộ không ngờ. Thầy rất tận tình, không khí lớp thân thiện và thoải mái. Mình không còn ngại ngùng khi cầm côn nữa!',
+    content: 'Trước khi học ở đây mình gần như không biết gì về côn nhị khúc. Sau 2 tháng học với thầy Hùng, mình tiến bộ không ngờ. Thầy rất tận tình, không khí lớp thân thiện và thoải mái.',
     source: 'Google',
     role: 'Học viên cơ sở Hà Đông',
   },
   {
-    id: 2,
+    id: 'f2',
     name: 'Thu Hà',
     avatar: 'TH',
     avatarBg: '#9c27b0',
     date: '28/10/2024',
     rating: 5,
-    content:
-      'Con mình học côn nhị khúc tại Võ đường và mình cực kỳ hài lòng. Con tiến bộ rõ rệt sau 3 tháng, đặc biệt là sự tự tin khi biểu diễn trước đám đông. HLV tận tâm, chỉnh sửa từng động tác tỉ mỉ. Là phụ huynh, mình yên tâm tuyệt đối khi cho con theo học tại đây.',
+    content: 'Con mình học côn nhị khúc tại Võ đường và mình cực kỳ hài lòng. Con tiến bộ rõ rệt sau 3 tháng, đặc biệt là sự tự tin khi biểu diễn trước đám đông. HLV tận tâm, chỉnh sửa từng động tác tỉ mỉ.',
     source: 'Google',
     role: 'Phụ huynh học viên',
   },
   {
-    id: 3,
+    id: 'f3',
     name: 'Hoàng Nam',
     avatar: 'HN',
     avatarBg: '#1d4ed8',
     date: '10/11/2024',
     rating: 5,
-    content:
-      'Mình từng tự học qua video YouTube nhưng mãi không lên được. Đến Võ đường học với thầy Linh mới hiểu ra mình sai ở đâu — từ tư thế, bộ pháp đến cách điều chỉnh lực. Chỉ sau 6 tuần, bạn bè khen mình biểu diễn đẹp hơn nhiều. Rất biết ơn Võ đường!',
+    content: 'Mình từng tự học qua video YouTube nhưng mãi không lên được. Đến Võ đường học với thầy Linh mới hiểu ra mình sai ở đâu. Chỉ sau 6 tuần, bạn bè khen mình biểu diễn đẹp hơn nhiều.',
     source: 'Facebook',
     role: 'Học viên cơ sở Kiến Hưng',
   },
   {
-    id: 4,
+    id: 'f4',
     name: 'Phương Linh',
     avatar: 'PL',
     avatarBg: '#059669',
     date: '05/11/2024',
     rating: 5,
-    content:
-      'Là con gái, mình lo lắng không biết có theo kịp không. Nhưng các thầy ở đây rất kiên nhẫn, điều chỉnh bài tập phù hợp với thể lực từng người. Bây giờ mình không chỉ học được côn mà còn cảm thấy tự tin và khỏe mạnh hơn rất nhiều. 10 điểm không có gì để chê!',
+    content: 'Là con gái, mình lo lắng không biết có theo kịp không. Nhưng các thầy rất kiên nhẫn, điều chỉnh bài tập phù hợp. Bây giờ mình không chỉ học được côn mà còn tự tin và khỏe mạnh hơn.',
     source: 'Facebook',
     role: 'Học viên nữ — cơ sở Thống Nhất',
   },
   {
-    id: 5,
+    id: 'f5',
     name: 'Đức Việt',
     avatar: 'ĐV',
     avatarBg: '#d97706',
     date: '18/10/2024',
     rating: 5,
-    content:
-      'Mình đăng ký học cho con trai 8 tuổi. Ban đầu bé còn nhút nhát, nhưng HLV biết cách tạo không khí vui, các bé học mà cứ như chơi. Chỉ sau 2 tháng, bé đã biểu diễn được một bài quyền hoàn chỉnh. Bé thích lắm, đòi đi học thêm ngày nghỉ!',
+    content: 'Mình đăng ký cho con trai 8 tuổi. HLV biết cách tạo không khí vui, các bé học mà cứ như chơi. Chỉ sau 2 tháng, bé đã biểu diễn được một bài quyền hoàn chỉnh. Bé thích lắm!',
     source: 'Google',
     role: 'Phụ huynh — bé 8 tuổi',
   },
   {
-    id: 6,
+    id: 'f6',
     name: 'Mai Anh',
     avatar: 'MA',
     avatarBg: '#db2777',
     date: '25/10/2024',
     rating: 5,
-    content:
-      'Mình học côn nhị khúc được 4 tháng, đã tham gia được giải giao lưu cấp quận. Điều mình ấn tượng nhất là phương pháp dạy rất khoa học — không chỉ dạy bài quyền mà còn giải thích nguyên lý đằng sau từng động tác. Nhờ vậy mình tiếp thu rất nhanh và không bị quên.',
+    content: 'Mình học được 4 tháng, đã tham gia giải giao lưu cấp quận. Phương pháp dạy rất khoa học — không chỉ dạy bài quyền mà còn giải thích nguyên lý đằng sau từng động tác.',
     source: 'Google',
     role: 'Học viên nâng cao',
   },
 ];
 
+function dtoToTestimonial(dto: TestimonialDto): Testimonial {
+  const date = new Date(dto.reviewDate);
+  const formatted = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+  return {
+    id: dto.id,
+    name: dto.authorName,
+    avatar: dto.avatarInitials ?? dto.authorName.slice(0, 2).toUpperCase(),
+    avatarBg: dto.avatarColor ?? '#dc2626',
+    date: formatted,
+    rating: dto.rating,
+    content: dto.content,
+    source: dto.source as 'Google' | 'Facebook',
+    role: dto.role ?? undefined,
+  };
+}
+
 function StarRating({ rating }: { rating: number }) {
   return (
     <div className={styles.stars} aria-label={`${rating} sao`}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <span key={i} className={i <= rating ? styles.starFilled : styles.star}>
-          ★
-        </span>
+        <span key={i} className={i <= rating ? styles.starFilled : styles.star}>★</span>
       ))}
     </div>
   );
@@ -128,6 +138,12 @@ export default function Testimonials() {
   const isInView = useInView(ref, { once: true, amount: 0.1 });
   const [activeIndex, setActiveIndex] = useState(0);
   const [visible, setVisible] = useState(3);
+  const { data: apiTestimonials } = useTestimonials();
+
+  const testimonials: Testimonial[] =
+    apiTestimonials && apiTestimonials.length > 0
+      ? apiTestimonials.map(dtoToTestimonial)
+      : FALLBACK_TESTIMONIALS;
 
   useEffect(() => {
     const handleResize = () => {
@@ -138,8 +154,11 @@ export default function Testimonials() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const maxIndex = TESTIMONIALS.length - visible;
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [testimonials.length]);
 
+  const maxIndex = Math.max(0, testimonials.length - visible);
   const prev = () => setActiveIndex((i) => Math.max(0, i - 1));
   const next = () => setActiveIndex((i) => Math.min(maxIndex, i + 1));
 
@@ -156,15 +175,12 @@ export default function Testimonials() {
             <span>💬</span> Học viên nói gì
           </span>
           <h2 className={styles.title}>
-            Cảm nhận từ{' '}
-            <span className={styles.highlight}>2,000+ học viên</span>
+            Cảm nhận từ <span className={styles.highlight}>500+ học viên</span>
           </h2>
           <div className={styles.rule} />
           <p className={styles.subtitle}>
             Đánh giá thực từ Google & Facebook — không chỉnh sửa, không dàn dựng.
           </p>
-
-          {/* Aggregate rating */}
           <div className={styles.aggregateRating}>
             <span className={styles.ratingScore}>4.9</span>
             <div className={styles.ratingStars}>
@@ -176,14 +192,13 @@ export default function Testimonials() {
           </div>
         </motion.div>
 
-        {/* Carousel */}
         <div className={styles.carouselWrapper}>
           <motion.div
             className={styles.carousel}
             animate={{ x: `calc(-${activeIndex * (100 / visible)}% - ${activeIndex * (16 / visible)}px)` }}
             transition={{ duration: 0.4, ease: EASE }}
           >
-            {TESTIMONIALS.map((t, i) => (
+            {testimonials.map((t, i) => (
               <motion.div
                 key={t.id}
                 className={styles.card}
@@ -193,12 +208,9 @@ export default function Testimonials() {
                 transition={{ duration: 0.45, delay: 0.1 + (i % visible) * 0.08, ease: EASE }}
               >
                 <div className={styles.quoteIcon}>"</div>
-
                 <div className={styles.cardTop}>
                   <div className={styles.avatarSection}>
-                    <div className={styles.avatar} style={{ background: t.avatarBg }}>
-                      {t.avatar}
-                    </div>
+                    <div className={styles.avatar} style={{ background: t.avatarBg }}>{t.avatar}</div>
                     <div>
                       <div className={styles.name}>{t.name}</div>
                       {t.role && <div className={styles.role}>{t.role}</div>}
@@ -209,9 +221,7 @@ export default function Testimonials() {
                     <span className={styles.date}>{t.date}</span>
                   </div>
                 </div>
-
                 <p className={styles.content}>{t.content}</p>
-
                 <div className={styles.cardFooter}>
                   <div className={styles.source}>
                     <SourceIcon source={t.source} />
@@ -223,17 +233,13 @@ export default function Testimonials() {
           </motion.div>
         </div>
 
-        {/* Controls */}
         <div className={styles.controls}>
           <button
             className={`${styles.navBtn} ${activeIndex === 0 ? styles.navBtnDisabled : ''}`}
             onClick={prev}
             disabled={activeIndex === 0}
             aria-label="Trước"
-          >
-            ←
-          </button>
-
+          >←</button>
           <div className={styles.dots}>
             {Array.from({ length: maxIndex + 1 }).map((_, i) => (
               <button
@@ -244,18 +250,14 @@ export default function Testimonials() {
               />
             ))}
           </div>
-
           <button
             className={`${styles.navBtn} ${activeIndex === maxIndex ? styles.navBtnDisabled : ''}`}
             onClick={next}
             disabled={activeIndex === maxIndex}
             aria-label="Tiếp"
-          >
-            →
-          </button>
+          >→</button>
         </div>
       </div>
-
       <div className={styles.bgDecoration} aria-hidden />
     </section>
   );

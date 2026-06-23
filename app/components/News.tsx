@@ -439,22 +439,26 @@ export default function News() {
                             overflow: "hidden",
                           }}
                         >
-                          <Link
-                            href={`/posts/${post.slug}`}
-                            style={{
-                              color: "inherit",
-                              textDecoration: "none",
-                              transition: "color 0.2s",
-                            }}
-                            onMouseEnter={(e) =>
-                              (e.currentTarget.style.color = "#f87614")
-                            }
-                            onMouseLeave={(e) =>
-                              (e.currentTarget.style.color = "#1a1a2e")
-                            }
-                          >
-                            {post.title}
-                          </Link>
+                          {isFallback ? (
+                            <span style={{ color: "inherit" }}>{post.title}</span>
+                          ) : (
+                            <Link
+                              href={`/posts/${post.slug}`}
+                              style={{
+                                color: "inherit",
+                                textDecoration: "none",
+                                transition: "color 0.2s",
+                              }}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.color = "#f87614")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.color = "#1a1a2e")
+                              }
+                            >
+                              {post.title}
+                            </Link>
+                          )}
                         </h3>
 
                         <p
@@ -520,29 +524,31 @@ export default function News() {
                             </div>
                           </div>
 
-                          <Link
-                            href={`/posts/${post.slug}`}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "0.375rem",
-                              color: "#f87614",
-                              textDecoration: "none",
-                              fontWeight: 600,
-                              fontSize: "0.8125rem",
-                              transition: "gap 0.2s ease",
-                              fontFamily: "'DM Sans', sans-serif",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.gap = "0.625rem";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.gap = "0.375rem";
-                            }}
-                          >
-                            <span>Chi tiết</span>
-                            <ArrowRight size={14} strokeWidth={2.5} />
-                          </Link>
+                          {!isFallback && (
+                            <Link
+                              href={`/posts/${post.slug}`}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.375rem",
+                                color: "#f87614",
+                                textDecoration: "none",
+                                fontWeight: 600,
+                                fontSize: "0.8125rem",
+                                transition: "gap 0.2s ease",
+                                fontFamily: "'DM Sans', sans-serif",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.gap = "0.625rem";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.gap = "0.375rem";
+                              }}
+                            >
+                              <span>Chi tiết</span>
+                              <ArrowRight size={14} strokeWidth={2.5} />
+                            </Link>
+                          )}
                         </div>
                       </div>
                     </motion.article>

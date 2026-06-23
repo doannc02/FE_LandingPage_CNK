@@ -101,7 +101,7 @@ async function testNavigation(browser) {
 
   // 1. Click "Giới thiệu" nav item → scrolls to about section
   const aboutLink = page.locator('a:has-text("Giới thiệu")').first();
-  if (await aboutLink.isVisible({ timeout: 1000 })) {
+  if (await aboutLink.isVisible({ timeout: 3000 })) {
     await aboutLink.click();
     await page.waitForTimeout(800);
     const url = page.url();
